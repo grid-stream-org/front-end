@@ -1,0 +1,138 @@
+/* Import Montserrat font family for the entire application */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Import Tailwind's base styles, components, and utilities */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Main theme colors - Light mode
+ * Derived from the logo's color scheme
+ */
+:root {
+  --theme-text: 220 10% 20%;
+  --theme-background: 220 30% 98%;
+  --theme-primary: 220 85% 45%;
+  --theme-secondary: 260 60% 55%;
+  --theme-accent: 200 90% 50%;
+  --theme-muted: 220 30% 90%;
+  --theme-muted-foreground: 220 20% 40%;
+}
+
+/* Main theme colors - Dark mode
+ * Adjusted for dark theme while maintaining brand identity
+ */
+.dark {
+  --theme-dark-text: 220 15% 95%;
+  --theme-dark-background: 220 25% 10%;
+  --theme-dark-primary: 220 75% 55%;
+  --theme-dark-secondary: 260 50% 65%;
+  --theme-dark-muted: 220 25% 20%;
+  --theme-dark-muted-foreground: 220 15% 65%;
+}
+
+/* Base layer configuration
+ * Defining semantic color tokens and other design variables
+ */
+@layer base {
+  :root {
+    /* Core colors referencing theme variables */
+    --background: var(--theme-background);
+    --foreground: var(--theme-text);
+    --card: var(--theme-background);
+    --card-foreground: var(--theme-text);
+    --popover: var(--theme-background);
+    --popover-foreground: var(--theme-text);
+    --primary: var(--theme-primary);
+    --primary-foreground: var(--theme-background);
+    --secondary: var(--theme-secondary);
+    --secondary-foreground: var(--theme-text);
+    --muted: var(--theme-muted);
+    --muted-foreground: var(--theme-muted-foreground);
+    --accent: var(--theme-muted);
+    --accent-foreground: var(--theme-text);
+
+    /* Status and feedback colors */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* UI element colors */
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: var(--theme-primary);
+
+    /* Chart colors - Brand-aligned visualization palette */
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+
+    /* Border radius */
+    --radius: 0.5rem;
+
+    /* Sidebar theming */
+    --sidebar-background: var(--theme-background);
+    --sidebar-foreground: var(--theme-text);
+    --sidebar-primary: var(--theme-primary);
+    --sidebar-primary-foreground: var(--theme-background);
+    --sidebar-accent: var(--theme-muted);
+    --sidebar-accent-foreground: var(--theme-text);
+    --sidebar-border: var(--border);
+    --sidebar-ring: var(--ring);
+  }
+
+  /* Dark mode overrides */
+  .dark {
+    --background: var(--theme-dark-background);
+    --foreground: var(--theme-dark-text);
+    --card: var(--theme-dark-background);
+    --card-foreground: var(--theme-dark-text);
+    --popover: var(--theme-dark-background);
+    --popover-foreground: var(--theme-dark-text);
+    --primary: var(--theme-dark-primary);
+    --primary-foreground: var(--theme-dark-background);
+    --secondary: var(--theme-dark-secondary);
+    --secondary-foreground: var(--theme-dark-text);
+    --muted: var(--theme-dark-muted);
+    --muted-foreground: var(--theme-dark-muted-foreground);
+    --accent: var(--theme-dark-muted);
+    --accent-foreground: var(--theme-dark-text);
+
+    /* Status colors for dark mode */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* UI elements in dark mode */
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: var(--theme-dark-primary);
+
+    /* Chart colors adjusted for dark mode */
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+
+    /* Sidebar colors for dark mode */
+    --sidebar-background: var(--theme-dark-background);
+    --sidebar-foreground: var(--theme-dark-text);
+    --sidebar-primary: var(--theme-dark-primary);
+    --sidebar-primary-foreground: var(--theme-dark-background);
+    --sidebar-accent: var(--theme-dark-muted);
+    --sidebar-accent-foreground: var(--theme-dark-text);
+    --sidebar-border: var(--border);
+    --sidebar-ring: var(--ring);
+  }
+}
+
+/* Base styles for consistent theming */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
