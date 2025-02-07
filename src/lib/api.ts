@@ -108,5 +108,5 @@ class ApiClient {
 }
 
 export const api = new ApiClient({
-  baseURL: 'http://localhost:8080/v1',
+  baseURL: 'https://gridstream-api-1046243458805.us-east1.run.app/v1',
 })
