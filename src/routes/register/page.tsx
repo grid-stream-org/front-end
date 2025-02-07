@@ -20,7 +20,11 @@ const registerSchema = z
     projectId: z.string().min(1, 'Project ID is required'),
     email: z.string().email('Invalid email address'),
     displayName: z.string().optional(),
-    phone: z.string().min(10, 'Phone number must be at least 10 digits').optional(),
+    phone: z
+      .string()
+      .min(10, 'Phone number must be at least 10 digits')
+      .optional()
+      .or(z.literal('')),
     password: z.string().min(8, 'Password must be at least 8 characters'),
     confirm: z.string(),
   })
