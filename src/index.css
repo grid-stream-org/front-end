@@ -56,6 +56,9 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
+    --success: 142.4 84.2% 60.2%;
+    --success-foreground: 142.4 0% 98%;
+
     /* UI element colors */
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
@@ -102,6 +105,9 @@
     /* Status colors for dark mode */
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
+
+    --success: 142.4 84.2% 60.2%;
+    --success-foreground: 142.4 0% 98%;
 
     /* UI elements in dark mode */
     --border: 0 0% 14.9%;

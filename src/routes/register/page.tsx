@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { FirebaseError } from 'firebase/app'
 import { Loader2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
@@ -11,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/context'
-import { handleFirebaseError, api } from '@/lib'
+import { handleError, api } from '@/lib'
 import { Project } from '@/types'
 
 // Form validation schema
@@ -96,20 +95,9 @@ const RegisterPage = () => {
         await createdUser.delete()
       }
 
-      // Handle error messages
-      if (error instanceof FirebaseError) {
-        form.setError('root', {
-          message: handleFirebaseError(error),
-        })
-      } else if (error instanceof Error) {
-        form.setError('root', {
-          message: error.message,
-        })
-      } else {
-        form.setError('root', {
-          message: 'An unexpected error occurred. Please contact support.',
-        })
-      }
+      form.setError('root', {
+        message: handleError(error),
+      })
     }
   }
 
@@ -213,7 +201,9 @@ const RegisterPage = () => {
           />
 
           {form.formState.errors.root && (
-            <span className="text-destructive">{form.formState.errors.root.message}</span>
+            <span className="text-[0.8rem] font-medium text-destructive">
+              {form.formState.errors.root.message}
+            </span>
           )}
 
           <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
