@@ -1,6 +1,5 @@
 import { type User } from '@firebase/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { FirebaseError } from 'firebase/app'
 import { Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -19,7 +18,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/context'
-import { handleFirebaseError, api } from '@/lib'
+import { api, handleError } from '@/lib'
 import { Project } from '@/types'
 
 const FORM_STATE_KEY = 'auth:loginFormState'
@@ -128,7 +127,7 @@ const LoginPage = () => {
       navigate('/app/dashboard')
     } catch (error) {
       loginForm.setError('root', {
-        message: handleFirebaseError(error),
+        message: handleError(error),
       })
     } finally {
       setIsGoogleLoading(false)
@@ -170,7 +169,7 @@ const LoginPage = () => {
 
       if (updateResponse.status !== 200) {
         projectIdForm.setError('projectId', {
-          message: 'Unable to associate user with project. Please contact support.',
+          message: 'Unable to associate account with Project ID. Please contact support.',
         })
         return
       }
@@ -187,25 +186,16 @@ const LoginPage = () => {
       if (createdUser) {
         await createdUser.delete()
       }
-      console.error(error)
-      if (error instanceof FirebaseError) {
-        projectIdForm.setError('root', {
-          message: handleFirebaseError(error),
-        })
-      } else if (error instanceof Error) {
-        projectIdForm.setError('root', {
-          message: error.message,
-        })
-      } else {
-        projectIdForm.setError('root', {
-          message: 'An unexpected error occurred. Please try again or contact support.',
-        })
-      }
+
+      projectIdForm.setError('root', {
+        message: handleError(error),
+      })
     }
   }
 
   const onResetPassword = async (values: ResetPasswordFormValues) => {
     try {
+      // TODO: Need to do this process properly
       await resetPassword(values.email)
       resetPasswordForm.setError('root', {
         message: 'Password reset instructions have been sent to your email.',
@@ -213,7 +203,7 @@ const LoginPage = () => {
       })
     } catch (error) {
       resetPasswordForm.setError('root', {
-        message: handleFirebaseError(error),
+        message: handleError(error),
       })
     }
   }
@@ -225,7 +215,7 @@ const LoginPage = () => {
       navigate('/app/dashboard')
     } catch (error) {
       loginForm.setError('root', {
-        message: handleFirebaseError(error),
+        message: handleError(error),
       })
     }
   }
@@ -257,8 +247,8 @@ const LoginPage = () => {
           <span
             className={
               resetPasswordForm.formState.errors.root.type === 'success'
-                ? 'text-green-600'
-                : 'text-destructive'
+                ? 'text-[0.8rem] font-medium text-success'
+                : 'text-[0.8rem] font-medium text-destructive'
             }
           >
             {resetPasswordForm.formState.errors.root.message}
@@ -302,6 +292,12 @@ const LoginPage = () => {
             </FormItem>
           )}
         />
+
+        {projectIdForm.formState.errors.root && (
+          <span className="text-[0.8rem] font-medium text-destructive">
+            {projectIdForm.formState.errors.root.message}
+          </span>
+        )}
 
         <Button
           type="submit"
@@ -366,7 +362,9 @@ const LoginPage = () => {
           />
 
           {loginForm.formState.errors.root && (
-            <span className="text-destructive">{loginForm.formState.errors.root.message}</span>
+            <span className="text-[0.8rem] font-medium text-destructive">
+              {loginForm.formState.errors.root.message}
+            </span>
           )}
 
           <Button type="submit" className="w-full" disabled={loginForm.formState.isSubmitting}>
@@ -433,7 +431,7 @@ const LoginPage = () => {
               <p className="text-balance text-muted-foreground">
                 {formState.isProjectIdStep
                   ? 'Please enter your Project ID to continue'
-                  : 'Login to your Gridstream account'}
+                  : 'Login to your GridStream account'}
               </p>
             </div>
             {formState.isProjectIdStep ? renderProjectIdStep() : renderLoginForm()}

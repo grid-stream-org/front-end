@@ -9,10 +9,17 @@ export interface ApiResponse<T> {
   status: number
 }
 
-export interface ApiError {
-  message: string
-  status?: number
-  code?: string
+export class ApiError extends Error {
+  constructor(
+    public message: string,
+    // eslint-disable-next-line no-unused-vars
+    public status?: number,
+    // eslint-disable-next-line no-unused-vars
+    public code?: string,
+  ) {
+    super(message)
+    this.name = 'ApiError'
+  }
 }
 
 class ApiClient {
@@ -95,18 +102,16 @@ class ApiClient {
 
   private handleError(error: unknown): ApiError {
     if (axios.isAxiosError(error)) {
-      return {
-        message: error.response?.data?.message || error.message,
-        status: error.response?.status,
-        code: error.code,
-      }
+      return new ApiError(
+        error.response?.data?.message || error.message,
+        error.response?.status,
+        error.code,
+      )
     }
-    return {
-      message: 'An unexpected error occurred',
-    }
+    return new ApiError('An unexpected error occurred')
   }
 }
 
 export const api = new ApiClient({
-  baseURL: 'https://gridstream-api-1046243458805.us-east1.run.app/v1',
+  baseURL: 'https://api.gridstream.app/v1',
 })
