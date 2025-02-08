@@ -1,6 +1,6 @@
 # <p align="center">Front-end</p>
 
-<p align="center">This is the client side application of GridStream. It is a React.js application using Tailwind CSS.</p>
+<p align="center">This is the client side application of GridStream.</p>
 
 ## 🧭 Table of Contents
 
@@ -100,7 +100,7 @@ nvm use
 ```
 
 Note:
-You may have to specify the actual version you wish to user here, as some operating systems don't pick upon the contents of the `.nvmrc` file. Try `nvm install <version> && nvm use <version>`
+You may have to specify the actual version you wish to user here, as some operating systems don't pick up on the contents of the `.nvmrc` file. Try `nvm install <version> && nvm use <version>`
 
 4. Install the necessary dependencies
 
@@ -108,7 +108,9 @@ You may have to specify the actual version you wish to user here, as some operat
 yarn install
 ```
 
-5. At this point, you can run the client
+5. Create a .`.env` file in the root of the project and populate with required values
+
+6. At this point, you can run the client
 
 ```bash
 yarn run dev
