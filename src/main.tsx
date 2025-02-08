@@ -11,7 +11,7 @@ import './index.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ErrorBoundary fallback={<GenericError />} onReset={() => window.location.reload()}>
+    <ErrorBoundary FallbackComponent={GenericError} onReset={() => window.location.reload()}>
       <ThemeProvider>
         <AuthProvider>
           <Suspense fallback={<LoadingScreen />}>

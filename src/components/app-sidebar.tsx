@@ -16,19 +16,13 @@ import {
   NavUser,
   useSidebar,
 } from '@/components/ui'
-import { Route } from '@/config'
+import { protectedRoutes, isActiveRoute } from '@/config'
 import { useAuth } from '@/context'
 
-interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
-  routes: Route[]
-}
-
-export const AppSidebar = ({ routes, ...props }: AppSidebarProps) => {
+export const AppSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => {
   const { open } = useSidebar()
   const location = useLocation()
   const { user } = useAuth()
-
-  const isActiveRoute = (route: Route) => location.pathname.split('/app/')[1] === route.path
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -41,9 +35,9 @@ export const AppSidebar = ({ routes, ...props }: AppSidebarProps) => {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {routes.map(route => (
+              {protectedRoutes.map(route => (
                 <SidebarMenuItem key={route.title}>
-                  <SidebarMenuButton asChild isActive={isActiveRoute(route)}>
+                  <SidebarMenuButton asChild isActive={isActiveRoute(route.path, location)}>
                     <Link to={route.path}>
                       <route.icon />
                       <span>{route.title}</span>

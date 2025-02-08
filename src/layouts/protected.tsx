@@ -1,13 +1,13 @@
-import { Loader2 } from 'lucide-react'
 import { Navigate, Outlet } from 'react-router-dom'
 
+import { LoadingScreen } from '@/components'
 import { useAuth } from '@/context'
 
-export const ProtectedRoute = () => {
+export const Protected = () => {
   const { user, loading } = useAuth()
 
   if (loading) {
-    return <Loader2 />
+    return <LoadingScreen />
   }
 
   if (!user) {

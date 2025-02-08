@@ -73,10 +73,18 @@ jobs:
         with:
           name: dist
           path: dist/
-      - name: Create Firebase configs
+      - name: Create configs
         run: |
           echo '{"projects":{"default":"gridstreamlogin"}}' > .firebaserc
-          echo '{"hosting": {"public": "dist","rewrites": [{"source": "**","destination": "/index.html"}],"redirects": [{"source": "/","host": "gridstreamlogin.web.app","destination": "https://gridstream.app","type": 301},{"source": "/","host": "gridstreamlogin.firebaseapp.com","destination": "https://gridstream.app","type": 301}]}}' > firebase.json
+          echo '{
+            "hosting": {
+              "public": "dist",
+              "rewrites": [{
+                "source": "**",
+                "destination": "/index.html"
+              }]
+            }
+          }' > firebase.json
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'

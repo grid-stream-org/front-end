@@ -1,6 +1,3 @@
-// components/GenericError.tsx
-import { Loader2 } from 'lucide-react'
-
 import { Button } from '@/components/ui/button'
 
 interface GenericErrorProps {
@@ -19,7 +16,6 @@ export const GenericError = ({ error, resetErrorBoundary }: GenericErrorProps) =
       </div>
 
       <Button onClick={resetErrorBoundary} className="min-w-[200px]">
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         Try Again
       </Button>
     </div>
