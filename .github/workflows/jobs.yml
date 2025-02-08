@@ -51,6 +51,13 @@ jobs:
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
       - run: yarn build
+        env:
+          VITE_FIREBASE_API_KEY: '${{ secrets.VITE_FIREBASE_API_KEY }}'
+          VITE_FIREBASE_AUTH_DOMAIN: '${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}'
+          VITE_FIREBASE_PROJECT_ID: '${{ secrets.VITE_FIREBASE_PROJECT_ID }}'
+          VITE_FIREBASE_STORAGE_BUCKET: '${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}'
+          VITE_FIREBASE_MESSAGING_SENDER_ID: '${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}'
+          VITE_FIREBASE_APP_ID: '${{ secrets.VITE_FIREBASE_APP_ID }}'
       - uses: actions/upload-artifact@v4
         with:
           name: dist
@@ -69,7 +76,7 @@ jobs:
       - name: Create Firebase configs
         run: |
           echo '{"projects":{"default":"gridstreamlogin"}}' > .firebaserc
-          echo '{"hosting":{"public":"dist","ignore":["firebase.json","**/.*","**/node_modules/**"],"rewrites":[{"source":"**","destination":"/index.html"}]}}' > firebase.json
+          echo '{"hosting": {"public": "dist","rewrites": [{"source": "**","destination": "/index.html"}],"redirects": [{"source": "/","host": "gridstreamlogin.web.app","destination": "https://gridstream.app","type": 301},{"source": "/","host": "gridstreamlogin.firebaseapp.com","destination": "https://gridstream.app","type": 301}]}}' > firebase.json
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
