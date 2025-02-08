@@ -13,7 +13,7 @@
     "postinstall": "husky"
   },
   "lint-staged": {
-    "*.{js,jsx}": [
+    "*.{ts,tsx,js,jsx}": [
       "yarn lint",
       "yarn format"
     ],
