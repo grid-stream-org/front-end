@@ -83,7 +83,7 @@ brew install yarn
 1. First, start by cloning this repository to your local machine
 
 ```bash
-git clone https://github.com/grid-stream-org/frontend.git
+git clone https://github.com/grid-stream-org/front-end.git
 ```
 
 2. Navigate into the project directory
