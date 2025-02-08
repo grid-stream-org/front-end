@@ -1,6 +1,5 @@
 # <p align="center">Front-end</p>
 
-<p align="center"><img src="public/images/logo-purple.svg" width="350px"/></p>
 <p align="center">This is the client side application of GridStream. It is a React.js application using Tailwind CSS.</p>
 
 ## 🧭 Table of Contents
@@ -8,7 +7,6 @@
 - [Frontend](#frontend)
   - [Table of Contents](#-table-of-contents)
   - [Team](#-team)
-  - [Directory Structure](#-directory-structure)
   - [Contributing](#-contributing)
   - [Local Run](#-local-run)
     - [Prerequisites](#prerequisites)
@@ -24,47 +22,6 @@
 | Cooper Dickson  | Project Manager/Developer | Ensure that the scope and timeline are feasible and overview project status, focus on UI and real-time transmission.                                    |
 | Eric Cuenat     | Scrum Master/Developer    | In charge of agile methods for the team such as organizing meetings, removing blockers, and team communication, focus on UI and web socket interaction. |
 | Sam Keays       | Product Owner/Developer   | Manager of product backlog and updating board to reflect scope changes and requirements, focus on database operations and schema design.                |
-
-## 🏗️ Directory Structure
-
-- `.husky/`
-  - Husky config for pre-commit hooks
-- `public/`
-  - Holds static assets like images, and favicons. These files are made available to the public, for example, a company logo used in a static header is a good example of what to store here.
-- `src/`
-
-  - Everything under here is not released to the public. (This is where we store the bulk of our code)
-  - `assets/`
-    - Holds assets that will be used by components. For example, images that are used inside of components should typically be stored in the src/ folder (e.g., in src/assets/).
-  - `components/`
-    - Responsible for holding reusable components (e.g., buttons, forms, cards). **Custom Components should always start with a capitalized letter. This prevents React from getting confused with built-in components. Example: CustomButton.js not customButton.js**
-  - `views/`
-    - Page level components that represents routes in the app. A view will have multiple components to form a page. Example, SignIn view might have a form component with a button component.
-  - `hooks/`
-    - Custom React hooks that can be reused across components. See https://www.w3schools.com/react/react_customhooks.asp for a very simple example
-  - `services/`
-    - Handles interactions with external APIs, like our Express backend or third-party APIs (e.g., authentication services). For example, we will most probably have an apiClient.js file that handles creating an instance of axios which sets up config to avoid repetition every time we call our express backend.
-  - `utils/`
-    - Stores any useful helper methods that can be reused across the application
-  - `config/`
-    - Stores any configuration necessary for the front end
-  - `state/`
-    - Used to manage complex state to avoid "prop drilling". For example, storing the state of a user so we have access to know if they are logged in throughout the app.
-
-- `.gitignore`
-  - Files or directories that git ignores
-- `.nvmrc`
-  - Defines the Node.js version for a project
-- `prettierrc.json`
-  - Prettier config
-- `CONTRIBUTING.md`
-  - Document outlining contribution guidelines
-- `package.json`
-  - Specific to Node.js and JavaScript projects, used to manage dependencies, scripts, and project metadata
-- `README.md`
-  - This :-)
-- `yarn.lock`
-  - Created by Yarn to ensure consistent dependency versions across environments
 
 ## ⛑️ Contributing
 
