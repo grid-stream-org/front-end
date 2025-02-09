@@ -46,7 +46,7 @@ body {
   --theme-dark-background: 220 25% 10%;
   --theme-dark-primary: 220 75% 55%;
   --theme-dark-secondary: 260 50% 65%;
-  --theme-dark-muted: 220 25% 20%;
+  --theme-dark-muted: 220 25% 15%;
   --theme-dark-muted-foreground: 220 15% 65%;
 }
 
@@ -94,7 +94,7 @@ body {
     --radius: 0.5rem;
 
     /* Sidebar theming */
-    --sidebar-background: var(--theme-background);
+    --sidebar-background: var(--theme-muted);
     --sidebar-foreground: var(--theme-text);
     --sidebar-primary: var(--theme-primary);
     --sidebar-primary-foreground: var(--theme-background);
@@ -141,7 +141,7 @@ body {
     --chart-5: 340 75% 55%;
 
     /* Sidebar colors for dark mode */
-    --sidebar-background: var(--theme-dark-background);
+    --sidebar-background: var(--theme-dark-muted);
     --sidebar-foreground: var(--theme-dark-text);
     --sidebar-primary: var(--theme-dark-primary);
     --sidebar-primary-foreground: var(--theme-dark-background);
