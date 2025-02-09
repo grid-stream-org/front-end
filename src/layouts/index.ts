@@ -1,3 +1,4 @@
 export * from './app-layout'
 export * from './auth-layout'
 export * from './protected'
+export * from './root'

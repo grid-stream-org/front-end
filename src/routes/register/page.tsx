@@ -1,3 +1,4 @@
+import { getAuth, User } from '@firebase/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -51,53 +52,82 @@ const RegisterPage = () => {
   })
 
   const onSubmit = async (values: RegisterFormValues) => {
-    let createdUser = null
+    if (!values.email || !values.password) {
+      form.setError('root', {
+        message: 'Email and password are required.',
+      })
+      return
+    }
+
+    let registeredUser: User | null = null
 
     try {
-      // Register user and get token
       const { user } = await register(values.email, values.password)
       if (!user) {
         throw new Error('User creation failed')
       }
-      createdUser = user
+      registeredUser = user
 
-      const token = await user.getIdToken(true)
-
-      // Verify project ID exists
-      const projectResponse = await api.get(`/projects/${values.projectId}`, token)
-      const project: Project = projectResponse.data as Project
-      if (projectResponse.status !== 200 || project.user_id !== '') {
-        form.setError('projectId', {
-          message: 'Invalid project ID. Please verify your registration information.',
+      let token: string
+      try {
+        token = await registeredUser.getIdToken(true)
+      } catch (error: unknown) {
+        form.setError('root', {
+          message: handleError(error),
         })
-        await user.delete()
+        await cleanupUser(registeredUser)
         return
       }
 
-      // Update project with user ID
-      const updateResponse = await api.put(
-        `/projects/${values.projectId}`,
-        {
-          user_id: user.uid,
-        },
-        token,
-      )
-      if (updateResponse.status !== 200) {
-        throw new Error('Failed to associate user with project')
-      }
+      try {
+        await verifyProject(values.projectId, token)
+        await associateUserWithProject(values.projectId, registeredUser.uid, token)
+        await createUserDocument(registeredUser, values.displayName || '', values.phone || '')
 
-      // Create user document and navigate to dashboard
-      await createUserDocument(user, values.displayName || '', values.phone || '')
-      navigate('/app/dashboard')
-    } catch (error: unknown) {
-      // Clean up created user if any step fails
-      if (createdUser) {
-        await createdUser.delete()
+        navigate('/app/dashboard')
+      } catch (error) {
+        await cleanupUser(registeredUser)
+        form.setError('root', {
+          message: handleError(error),
+        })
       }
-
+    } catch (error) {
       form.setError('root', {
         message: handleError(error),
       })
+    }
+  }
+
+  const verifyProject = async (projectId: string, token: string): Promise<void> => {
+    const response = await api.get(`/projects/${projectId}`, token)
+    const project = response.data as Project
+
+    if (response.status !== 200 || project.user_id !== '') {
+      throw new Error('Invalid Project ID. Please verify your registration information.')
+    }
+  }
+
+  const associateUserWithProject = async (
+    projectId: string,
+    userId: string,
+    token: string,
+  ): Promise<void> => {
+    const response = await api.put(`/projects/${projectId}`, { user_id: userId }, token)
+
+    if (response.status !== 200) {
+      throw new Error('Unable to associate account with Project ID. Please contact support.')
+    }
+  }
+
+  const cleanupUser = async (user: User) => {
+    try {
+      const auth = getAuth()
+      const currentUser = auth.currentUser
+      if (currentUser && currentUser.uid === user.uid) {
+        await currentUser.delete()
+      }
+    } catch (error) {
+      console.error('Failed to cleanup user:', error)
     }
   }
 
@@ -116,7 +146,7 @@ const RegisterPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-none md:grid-rows-3 place-items-center place-content-center gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-none md:grid-rows-3 place-content-center gap-3 w-full">
             <FormField
               control={form.control}
               name="projectId"

@@ -79,6 +79,22 @@ jobs:
           echo '{
             "hosting": {
               "public": "dist",
+              "ignore": [
+                "firebase.json",
+                "**/.*",
+                "**/node_modules/**"
+              ],
+              "headers": [
+                {
+                  "source": "**/*.js",
+                  "headers": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/javascript"
+                    }
+                  ]
+                }
+              ],
               "rewrites": [{
                 "source": "**",
                 "destination": "/index.html"

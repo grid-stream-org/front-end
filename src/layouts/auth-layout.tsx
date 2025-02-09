@@ -11,7 +11,7 @@ export const AuthLayout = () => {
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6">
-      <div className="w-full max-w-sm md:max-w-5xl">
+      <div className={`w-full max-w-sm ${isRegister ? 'md:max-w-5xl' : 'md:max-w-3xl'}`}>
         <div className="flex flex-col gap-6">
           <Card className="overflow-hidden flex flex-col min-h-[606px] p-6">
             <CardContent className="grid p-0 md:grid-cols-2 flex-grow relative">

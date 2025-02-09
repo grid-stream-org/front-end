@@ -49,8 +49,7 @@ const protectedRoutes: AppRoute[] = [
 
 export const routes = [...publicRoutes, ...protectedRoutes, ...authRoutes]
 
-export const getTitle = (location: Location): string | undefined => {
-  const pathname = location.pathname
+export const getTitle = (pathname: string): string | undefined => {
   const path = pathname.includes('app') ? pathname.split('/app/')[1] : pathname.replace('/', '')
   const route = routes.find(route => route.path === path)
   return route?.title
