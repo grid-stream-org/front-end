@@ -10,10 +10,10 @@ export const AuthLayout = () => {
   const isRegister = location.pathname.includes('register')
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
-      <div className="w-full max-w-sm md:max-w-4xl">
+    <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6">
+      <div className="w-full max-w-sm md:max-w-5xl">
         <div className="flex flex-col gap-6">
-          <Card className="overflow-hidden flex flex-col p-6 md:p-8">
+          <Card className="overflow-hidden flex flex-col min-h-[606px] p-6">
             <CardContent className="grid p-0 md:grid-cols-2 flex-grow relative">
               <div className="flex flex-col h-full bg-background md:hidden">
                 <Outlet />

@@ -6,6 +6,19 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
 /* Main theme colors - Light mode
  * Derived from the logo's color scheme
  */
@@ -17,6 +30,12 @@
   --theme-accent: 200 90% 50%;
   --theme-muted: 220 30% 90%;
   --theme-muted-foreground: 220 20% 40%;
+
+  font-optical-sizing: auto;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Main theme colors - Dark mode
