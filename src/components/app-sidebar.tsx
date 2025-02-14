@@ -26,7 +26,7 @@ export const AppSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => {
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="border-b border-sidebar-border">
         <Link to="dashboard">
           <Logo showText={open} />
         </Link>

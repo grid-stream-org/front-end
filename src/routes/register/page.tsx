@@ -52,13 +52,6 @@ const RegisterPage = () => {
   })
 
   const onSubmit = async (values: RegisterFormValues) => {
-    if (!values.email || !values.password) {
-      form.setError('root', {
-        message: 'Email and password are required.',
-      })
-      return
-    }
-
     let registeredUser: User | null = null
 
     try {
@@ -82,7 +75,12 @@ const RegisterPage = () => {
       try {
         await verifyProject(values.projectId, token)
         await associateUserWithProject(values.projectId, registeredUser.uid, token)
-        await createUserDocument(registeredUser, values.displayName || '', values.phone || '')
+        await createUserDocument(
+          registeredUser,
+          values.displayName || '',
+          values.phone || '',
+          values.projectId,
+        )
 
         navigate('/app/dashboard')
       } catch (error) {
