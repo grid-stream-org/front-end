@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 import { PageTitle } from '@/components'
 import { getAppRoute } from '@/config'
 
-const DashboardPage = () => {
+const EventsPage = () => {
   const location = useLocation()
 
   return (
@@ -13,4 +13,4 @@ const DashboardPage = () => {
   )
 }
 
-export default DashboardPage
+export default EventsPage

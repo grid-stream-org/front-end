@@ -1,4 +1,11 @@
-import { LucideIcon, LayoutDashboard } from 'lucide-react'
+import {
+  LucideIcon,
+  LayoutDashboard,
+  ScrollText,
+  Gauge,
+  Calendar,
+  SatelliteDish,
+} from 'lucide-react'
 import { Location, RouteObject } from 'react-router-dom'
 
 interface Route {
@@ -9,6 +16,7 @@ interface Route {
 }
 
 interface AppRoute extends Route {
+  description: string
   icon: LucideIcon
 }
 
@@ -43,7 +51,36 @@ const protectedRoutes: AppRoute[] = [
     title: 'Dashboard',
     path: 'dashboard',
     icon: LayoutDashboard,
+    description: 'View key metrics and overview of your grid',
     component: () => import('@/routes/app/dashboard'),
+  },
+  {
+    title: 'Monitoring',
+    path: 'monitoring',
+    icon: Gauge,
+    description: 'Monitor real-time power flow and device performance across your residence',
+    component: () => import('@/routes/app/monitoring'),
+  },
+  {
+    title: 'Events',
+    path: 'events',
+    icon: Calendar,
+    description: 'Track prior, current, and future demand response events',
+    component: () => import('@/routes/app/events'),
+  },
+  {
+    title: 'Contracts',
+    path: 'contracts',
+    icon: ScrollText,
+    description: 'Manage and review your contracts and agreements',
+    component: () => import('@/routes/app/contracts'),
+  },
+  {
+    title: 'Devices',
+    path: 'devices',
+    icon: SatelliteDish,
+    description: 'View and manage your distributed energy resources',
+    component: () => import('@/routes/app/devices'),
   },
 ]
 
@@ -60,13 +97,17 @@ export const isActiveRoute = (path: string, location: Location): boolean => {
   return appPath === path
 }
 
-export const isAppRoute = (route: Route): route is AppRoute => {
-  return 'icon' in route && 'component' in route
+export const isAppRoute = (route: Route): route is AppRoute =>
+  'icon' in route && 'component' in route && 'description' in route
+
+export const getAppRoute = (pathname: string): AppRoute | undefined => {
+  const path = pathname.includes('app') ? pathname.split('/app/')[1] : pathname.replace('/', '')
+  return protectedRoutes.find(route => route.path === path)
 }
 
-export const getAppRoutes = (): AppRoute[] => {
-  return routes.filter(isAppRoute)
-}
+export const getAppRoutes = (): AppRoute[] => routes.filter(isAppRoute)
+
+export const getAppPath = (route: AppRoute) => `/app/${route.path}`
 
 export const createRouteConfig = (route: Route): RouteObject => ({
   path: route.path,

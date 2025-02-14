@@ -1,3 +1,4 @@
+import { doc, setDoc, getDoc, getFirestore } from '@firebase/firestore'
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -8,36 +9,10 @@ import {
   sendPasswordResetEmail,
   type User,
 } from 'firebase/auth'
-import { doc, setDoc, getDoc, getFirestore } from 'firebase/firestore'
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 
 import { auth } from '@/lib/firebase'
-
-enum UserRole {
-  // eslint-disable-next-line no-unused-vars
-  UTILITY,
-  // eslint-disable-next-line no-unused-vars
-  RESIDENTIAL,
-  // eslint-disable-next-line no-unused-vars
-  TECHNICIAN,
-}
-
-export interface AuthResponse {
-  exists: boolean
-  user?: User
-}
-
-export interface UserData {
-  uid: string
-  email: string
-  displayName: string | null
-  phoneNumber: string
-  photoURL: string | null
-  role: UserRole
-  createdAt: Date
-  updatedAt: Date
-  credential: User
-}
+import { AuthResponse, UserData, UserRole } from '@/types'
 
 interface AuthContextType {
   user: UserData | null
@@ -57,8 +32,17 @@ interface AuthContextType {
   updateProfile: (data: Partial<UserData>) => Promise<void>
   // eslint-disable-next-line no-unused-vars
   resetPassword: (email: string) => Promise<void>
-  // eslint-disable-next-line no-unused-vars
-  createUserDocument: (user: User, displayName: string, phoneNumber: string) => Promise<void>
+
+  createUserDocument: (
+    // eslint-disable-next-line no-unused-vars
+    user: User,
+    // eslint-disable-next-line no-unused-vars
+    displayName: string,
+    // eslint-disable-next-line no-unused-vars
+    phoneNumber: string,
+    // eslint-disable-next-line no-unused-vars
+    projectId: string,
+  ) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -75,11 +59,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const data = userDoc.data()
       const userData: UserData = {
         uid: data.uid,
+        projectId: data.projectId,
         email: data.email,
         displayName: data.displayName,
         phoneNumber: data.phoneNumber,
         photoURL: data.photoURL,
-        role: UserRole.RESIDENTIAL,
+        role: data.role,
         createdAt: data.createdAt.toDate(),
         updatedAt: data.updatedAt.toDate(),
         credential: data.user,
@@ -88,9 +73,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  const createUserDocument = async (user: User, displayName: string, phoneNumber: string) => {
+  const createUserDocument = async (
+    user: User,
+    displayName: string,
+    phoneNumber: string,
+    projectId: string,
+  ) => {
     const userDoc = {
       uid: user.uid,
+      projectId,
       email: user.email!,
       displayName: displayName || user.displayName || '',
       phoneNumber: phoneNumber || user.phoneNumber || '',

@@ -1,6 +1,33 @@
 import { type User } from '@firebase/auth'
 import { z } from 'zod'
 
+export enum UserRole {
+  // eslint-disable-next-line no-unused-vars
+  UTILITY,
+  // eslint-disable-next-line no-unused-vars
+  RESIDENTIAL,
+  // eslint-disable-next-line no-unused-vars
+  TECHNICIAN,
+}
+
+export interface AuthResponse {
+  exists: boolean
+  user?: User
+}
+
+export interface UserData {
+  uid: string
+  projectId: string
+  email: string
+  displayName: string | null
+  phoneNumber: string
+  photoURL: string | null
+  role: UserRole
+  createdAt: Date
+  updatedAt: Date
+  credential: User
+}
+
 export interface FormState {
   isProjectIdStep: boolean
   isForgotPasswordStep: boolean

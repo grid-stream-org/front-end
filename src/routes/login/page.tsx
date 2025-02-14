@@ -4,13 +4,10 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
-import { ForgotPasswordForm } from './forgot-password-form'
-import { LoginForm } from './login-form'
-import { ProjectIdForm } from './project-id-form'
-
 import { Logo } from '@/components'
 import { useAuth } from '@/context'
 import { api, handleError } from '@/lib'
+import { ForgotPasswordForm, LoginForm, ProjectIdForm } from '@/routes/login'
 import {
   FormState,
   LoginFormValues,
@@ -135,6 +132,7 @@ const LoginPage = () => {
         currentUser,
         currentUser.displayName || '',
         currentUser.phoneNumber || '',
+        values.projectId,
       )
 
       resetFormState()
