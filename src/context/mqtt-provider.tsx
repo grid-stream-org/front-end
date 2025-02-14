@@ -39,33 +39,25 @@ export const MqttProvider = ({ children }: { children: ReactNode }) => {
     clientRef.current = client
 
     client.on('connect', () => {
-      console.log('Connected to broker')
       setIsConnected(true)
       setError(null)
 
       const qos = (Number(import.meta.env.VITE_MQTT_QOS) || 0) as 0 | 1 | 2
       client.subscribe(topic, { qos }, err => {
         if (err) {
-          console.error(`Failed to subscribe: ${err.message}`)
-        } else {
-          console.log(`Subscribed to topic: ${topic}`)
+          setError(err)
         }
       })
     })
 
     client.on('message', (receivedTopic: string, message: Buffer) => {
       if (receivedTopic === topic) {
-        try {
-          const parsedData = JSON.parse(message.toString()) as DERData[]
-          setData(parsedData)
-        } catch (e) {
-          console.error('Error parsing message', e)
-        }
+        const parsedData = JSON.parse(message.toString()) as DERData[]
+        setData(parsedData)
       }
     })
 
     client.on('error', (err: Error) => {
-      console.error('MQTT Client Error:', err)
       setError(err)
       setIsConnected(false)
     })
@@ -74,7 +66,7 @@ export const MqttProvider = ({ children }: { children: ReactNode }) => {
   const disconnectClient = (): void => {
     if (clientRef.current) {
       clientRef.current.end()
-      console.log('Disconnected from MQTT broker')
+      setIsConnected(false)
     }
   }
 
