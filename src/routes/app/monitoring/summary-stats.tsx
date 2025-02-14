@@ -62,7 +62,7 @@ const SummaryStatsCard = ({
 )
 
 const NoDataState = () => (
-  <div className="flex min-h-[200px] flex-col items-center justify-center gap-2 rounded-lg border border-dashed">
+  <div className="flex min-h-[100px] flex-col items-center justify-center gap-2 rounded-lg border border-dashed">
     <CloudOff className="h-8 w-8 text-muted-foreground" />
     <p className="text-sm text-muted-foreground">No device data available</p>
   </div>

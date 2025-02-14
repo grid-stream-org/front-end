@@ -26,13 +26,15 @@ export const useMeterData = () => {
           0,
         )
         const baseline = currentData[0].baseline
+        const consumption = currentData[0].power_meter_measurement - totalOutput
         addDataPoint({
           date: new Date(currentData[0].timestamp).getTime(),
           baseline,
+          // TODO we need to figure out this math
           load: currentData[0].power_meter_measurement,
-          consumption: currentData[0].power_meter_measurement - totalOutput,
+          consumption,
           contract: currentData[0].contract_threshold,
-          reduction: totalOutput,
+          reduction: baseline - consumption,
           ders: currentData,
         })
       } else {

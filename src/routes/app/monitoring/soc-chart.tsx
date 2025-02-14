@@ -46,9 +46,11 @@ export const SOCChart = ({ data, isConnected, error }: SOCChartProps) => {
     const deviceTypes = new Set<string>()
 
     data.forEach(point => {
-      point.ders?.forEach(device => {
-        deviceTypes.add(device.type)
-      })
+      point.ders
+        ?.filter(device => device.type !== 'solar')
+        .forEach(device => {
+          deviceTypes.add(device.type)
+        })
     })
 
     return Array.from(deviceTypes).reduce((config, type, index) => {
