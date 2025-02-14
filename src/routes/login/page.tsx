@@ -132,6 +132,7 @@ const LoginPage = () => {
         currentUser,
         currentUser.displayName || '',
         currentUser.phoneNumber || '',
+        values.projectId,
       )
 
       resetFormState()
