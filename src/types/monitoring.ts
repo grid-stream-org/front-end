@@ -12,6 +12,7 @@ export interface DERData {
   units: string
   timestamp: string
   type: string
+  nameplate_capacity: number
 }
 
 export interface DataPoint {
@@ -24,10 +25,10 @@ export interface DataPoint {
   ders: DERData[] | null
 }
 
-export type TimeRangeOption = '1m' | '10m' | '30m' | '60m'
+export type TimeRangeOption = '5m' | '10m' | '30m' | '60m'
 
 export const TIME_WINDOWS = {
-  '1m': 1 * 60 * 1000,
+  '5m': 5 * 60 * 1000,
   '10m': 10 * 60 * 1000,
   '30m': 30 * 60 * 1000,
   '60m': 60 * 60 * 1000,

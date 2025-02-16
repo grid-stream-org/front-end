@@ -6,6 +6,8 @@ import {
   Activity,
   Scale,
   FileBarChart,
+  TrendingUpDown,
+  LucideIcon,
 } from 'lucide-react'
 import { ReactNode, useMemo, useState } from 'react'
 
@@ -42,8 +44,8 @@ const SummaryStatsCard = ({
           <SelectValue placeholder="Select time range" />
         </SelectTrigger>
         <SelectContent className="rounded-xl">
-          <SelectItem value="1m" className="rounded-lg hover:cursor-pointer">
-            Last 1 minute
+          <SelectItem value="5m" className="rounded-lg hover:cursor-pointer">
+            Last 5 minutes
           </SelectItem>
           <SelectItem value="10m" className="rounded-lg hover:cursor-pointer">
             Last 10 minutes
@@ -65,6 +67,24 @@ const NoDataState = () => (
   <div className="flex min-h-[100px] flex-col items-center justify-center gap-2 rounded-lg border border-dashed">
     <CloudOff className="h-8 w-8 text-muted-foreground" />
     <p className="text-sm text-muted-foreground">No device data available</p>
+  </div>
+)
+
+const SummaryStat = ({
+  title,
+  text,
+  icon: Icon,
+}: {
+  title: string
+  text: string
+  icon: LucideIcon
+}) => (
+  <div className="flex items-center gap-2">
+    <Icon className="h-9 w-9 text-muted-foreground" />
+    <div>
+      <p className="text-sm font-medium">{title}</p>
+      <p className="text-xl sm:text-2xl font-bold">{text}</p>
+    </div>
   </div>
 )
 
@@ -108,6 +128,8 @@ export const SummaryStats = ({ data, isConnected }: SummaryStatsProps) => {
   const avgLoad = visibleData.reduce((acc, pt) => acc + (pt.load || 0), 0) / visibleData.length
   const avgConsumption =
     visibleData.reduce((acc, pt) => acc + (pt.consumption || 0), 0) / visibleData.length
+  const avgReduction =
+    visibleData.reduce((acc, pt) => acc + (pt.reduction || 0), 0) / visibleData.length
 
   // Count online devices
   const onlineDevices = latest.ders.filter(d => d.is_online).length
@@ -121,72 +143,48 @@ export const SummaryStats = ({ data, isConnected }: SummaryStatsProps) => {
 
   return (
     <SummaryStatsCard timeRange={timeRange} setTimeRange={setTimeRange}>
-      <div className="grid gap-4 gap-y-8 md:grid-cols-2 lg:grid-cols-4">
-        <div className="flex items-center gap-2">
+      <div className="grid gap-8 grid-cols-2 lg:grid-cols-5">
+        <SummaryStat title="Current Load" text={latest.load?.toFixed(1) + 'kW'} icon={Activity} />
+        {/* <div className="flex items-center gap-2">
           <Activity className="h-9 w-9 text-muted-foreground" />
           <div>
             <p className="text-sm font-medium">Current Load</p>
             <p className="text-2xl font-bold">{latest.load?.toFixed(1)} kW</p>
           </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <PlugZap className="h-9 w-9 text-muted-foreground" />
-          <div>
-            <p className="text-sm font-medium">Current Consumption</p>
-            <p className="text-2xl font-bold">{latest.consumption?.toFixed(1)} kW</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Scale className="h-9 w-9 text-muted-foreground" />
-          <div>
-            <p className="text-sm font-medium">Baseline</p>
-            <p className="text-2xl font-bold">{latest.baseline?.toFixed(1)} kW</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <FileBarChart className="h-9 w-9 text-muted-foreground" />
-          <div>
-            <p className="text-sm font-medium">Contract</p>
-            <p className="text-2xl font-bold">{latest.contract?.toFixed(1)} kW</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Activity className="h-9 w-9 text-muted-foreground" />
-          <div>
-            <p className="text-sm font-medium">Average Load</p>
-            <p className="text-2xl font-bold">{avgLoad.toFixed(1)} kW</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <PlugZap className="h-9 w-9 text-muted-foreground" />
-          <div>
-            <p className="text-sm font-medium">Average Consumption</p>
-            <p className="text-2xl font-bold">{avgConsumption.toFixed(1)} kW</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <SatelliteDish className="h-9 w-9 text-muted-foreground" />
-          <div>
-            <p className="text-sm font-medium">Device Status</p>
-            <p className="text-2xl font-bold">
-              {onlineDevices}/{totalDevices}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <BatteryMedium className="h-9 w-9 text-muted-foreground" />
-          <div>
-            <p className="text-sm font-medium">Average SOC</p>
-            <p className="text-2xl font-bold">{avgSOC.toFixed(1)}%</p>
-          </div>
-        </div>
+        </div> */}
+        <SummaryStat
+          title="Current Consumption"
+          text={latest.consumption?.toFixed(1) + 'kW'}
+          icon={PlugZap}
+        />
+        <SummaryStat
+          title="Current Reduction"
+          text={latest.reduction?.toFixed(1) + 'kW'}
+          icon={TrendingUpDown}
+        />
+        <SummaryStat title="Baseline" text={latest.baseline?.toFixed(1) + 'kW'} icon={Scale} />
+        <SummaryStat
+          title="Contract"
+          text={latest.contract?.toFixed(1) + 'kW'}
+          icon={FileBarChart}
+        />
+        <SummaryStat title="Average Load" text={avgLoad.toFixed(1) + 'kW'} icon={Activity} />
+        <SummaryStat
+          title="Average Consumption"
+          text={avgConsumption.toFixed(1) + 'kW'}
+          icon={PlugZap}
+        />
+        <SummaryStat
+          title="Average Reduction"
+          text={avgReduction.toFixed(1) + 'kW'}
+          icon={TrendingUpDown}
+        />
+        <SummaryStat
+          title="Device Status"
+          text={onlineDevices + '/' + totalDevices}
+          icon={SatelliteDish}
+        />
+        <SummaryStat title="Average SOC" text={avgSOC.toFixed(1) + '%'} icon={BatteryMedium} />
       </div>
     </SummaryStatsCard>
   )

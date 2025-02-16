@@ -22,12 +22,11 @@ export const handleError = (error: unknown): string => {
   }
 
   if (error instanceof Error) {
-    // Log the actual error for debugging
-    console.error(error)
-    return 'Something went wrong. Please try again or contact support if the issue persists.'
+    return error.message
   }
 
-  return 'An unexpected error occurred. Please refresh the page and try again.'
+  console.error(error)
+  return 'Something went wrong. Please try again or contact support if the issue persists.'
 }
 
 const handleFirebaseError = (error: FirebaseError): string => {

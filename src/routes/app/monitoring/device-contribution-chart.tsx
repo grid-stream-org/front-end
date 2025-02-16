@@ -132,7 +132,7 @@ export const DeviceContributionChart = ({
     if (!isConnected) {
       return (
         <>
-          <Skeleton className="h-[280px] w-full rounded-lg" />
+          <Skeleton className="h-[280px] w-full rounded-lg mt-10" />
           <div className="flex justify-center space-x-4 mt-2">
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-4 w-24" />
@@ -144,7 +144,7 @@ export const DeviceContributionChart = ({
 
     if (error) {
       return (
-        <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground border border-dashed rounded-lg border-destructive">
+        <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground border border-dashed rounded-lg border-destructive mt-10">
           <CloudAlert size={36} className="text-destructive" />
           <p className="text-sm text-destructive">
             Error: {error ? error.message : 'An unexpected error occurred. Please try again later.'}
@@ -155,7 +155,7 @@ export const DeviceContributionChart = ({
 
     if (!visibleData.length) {
       return (
-        <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground border border-dashed rounded-lg">
+        <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground border border-dashed rounded-lg mt-10">
           <CloudOff size={36} />
           <p className="text-sm">No data available for the selected time range</p>
         </div>
@@ -222,7 +222,7 @@ export const DeviceContributionChart = ({
   return (
     <Card className="w-full">
       <CardHeader className="flex items-center gap-2 border-b py-5 sm:flex-row">
-        <CardTitle>Device Contributions (KW)</CardTitle>
+        <CardTitle>Device Contributions</CardTitle>
         <Select
           value={timeRange}
           onValueChange={(value: string) => setTimeRange(value as TimeRangeOption)}
@@ -231,8 +231,8 @@ export const DeviceContributionChart = ({
             <SelectValue placeholder="Select time range" />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
-            <SelectItem value="1m" className="rounded-lg hover:cursor-pointer">
-              Last 1 minute
+            <SelectItem value="5m" className="rounded-lg hover:cursor-pointer">
+              Last 5 minutes
             </SelectItem>
             <SelectItem value="10m" className="rounded-lg hover:cursor-pointer">
               Last 10 minutes

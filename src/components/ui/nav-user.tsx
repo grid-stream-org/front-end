@@ -27,6 +27,7 @@ export const NavUser = ({
     name: string
     email: string
     avatar: string
+    projectId: string
   }
 }) => {
   const { isMobile } = useSidebar()
@@ -65,7 +66,7 @@ export const NavUser = ({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            className="min-w-56 rounded-lg"
             side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
@@ -77,8 +78,9 @@ export const NavUser = ({
                   <AvatarFallback className="rounded-lg">{getInitials(user.name)}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="font-semibold">{user.name}</span>
+                  <span className="text-xs">Email: {user.email}</span>
+                  <span className="text-xs">Project ID: {user.projectId}</span>
                 </div>
               </div>
             </DropdownMenuLabel>

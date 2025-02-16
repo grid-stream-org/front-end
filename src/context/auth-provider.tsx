@@ -67,7 +67,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         role: data.role,
         createdAt: data.createdAt.toDate(),
         updatedAt: data.updatedAt.toDate(),
-        credential: data.user,
       }
       setUser(userData)
     }
@@ -92,7 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     await setDoc(doc(db, 'users', user.uid), userDoc)
-    setUser({ ...userDoc, credential: user })
+    setUser(userDoc)
   }
 
   useEffect(() => {

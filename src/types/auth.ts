@@ -25,7 +25,6 @@ export interface UserData {
   role: UserRole
   createdAt: Date
   updatedAt: Date
-  credential: User
 }
 
 export interface FormState {
