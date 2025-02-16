@@ -1,0 +1,48 @@
+name: deploy
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Create configs
+        run: |
+          echo '{"projects":{"default":"gridstreamlogin"}}' > .firebaserc
+          echo '{
+            "hosting": {
+              "public": "dist",
+              "ignore": [
+                "firebase.json",
+                "**/.*",
+                "**/node_modules/**"
+              ],
+              "headers": [
+                {
+                  "source": "**/*.js",
+                  "headers": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/javascript"
+                    }
+                  ]
+                }
+              ],
+              "rewrites": [{
+                "source": "**",
+                "destination": "/index.html"
+              }]
+            }
+          }' > firebase.json
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          channelId: live
+          projectId: gridstreamlogin
