@@ -126,14 +126,14 @@ const LoginPage = () => {
     try {
       await verifyProject(values.projectId, token)
 
-      await associateUserWithProject(values.projectId, currentUser.uid, token)
-
       await createUserDocument(
         currentUser,
         currentUser.displayName || '',
         currentUser.phoneNumber || '',
         values.projectId,
       )
+
+      await associateUserWithProject(values.projectId, currentUser.uid, token)
 
       resetFormState()
       navigate('/app/dashboard')
