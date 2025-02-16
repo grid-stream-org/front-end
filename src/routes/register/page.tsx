@@ -74,13 +74,15 @@ const RegisterPage = () => {
 
       try {
         await verifyProject(values.projectId, token)
-        await associateUserWithProject(values.projectId, registeredUser.uid, token)
+
         await createUserDocument(
           registeredUser,
           values.displayName || '',
           values.phone || '',
           values.projectId,
         )
+
+        await associateUserWithProject(values.projectId, registeredUser.uid, token)
 
         navigate('/app/dashboard')
       } catch (error) {
