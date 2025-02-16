@@ -8,7 +8,6 @@ import { SOCChart } from './soc-chart'
 import { SummaryStats } from './summary-stats'
 
 import { PageTitle } from '@/components'
-import { Badge } from '@/components/ui'
 import { getAppRoute } from '@/config'
 import { useMqttData } from '@/context'
 import { useMeterData } from '@/hooks'
@@ -22,14 +21,10 @@ const MonitoringPage = () => {
 
   return (
     <>
-      <PageTitle route={getAppRoute(location.pathname)}>
-        <Badge
-          className={`text-background py-1 ${
-            isConnected ? 'bg-green-600 hover:bg-green-500' : 'bg-red-600 hover:bg-red-500'
-          }`}
-        >
-          {isConnected ? 'Connected' : 'Disconnected'}
-        </Badge>
+      <PageTitle route={getAppRoute(location.pathname)} className="items-end">
+        <p className={`text-xs ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
+          {isConnected ? 'Live Connection' : 'Disconnected'}
+        </p>
       </PageTitle>
 
       <div className="flex flex-col space-y-8">

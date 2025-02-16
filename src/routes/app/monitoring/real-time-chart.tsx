@@ -166,8 +166,8 @@ export const RealTimeChart = ({
             <SelectValue placeholder="Select time range" />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
-            <SelectItem value="1m" className="rounded-lg hover:cursor-pointer">
-              Last 1 minute
+            <SelectItem value="5m" className="rounded-lg hover:cursor-pointer">
+              Last 5 minutes
             </SelectItem>
             <SelectItem value="10m" className="rounded-lg hover:cursor-pointer">
               Last 10 minutes

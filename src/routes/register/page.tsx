@@ -74,13 +74,14 @@ const RegisterPage = () => {
 
       try {
         await verifyProject(values.projectId, token)
-        await associateUserWithProject(values.projectId, registeredUser.uid, token)
         await createUserDocument(
           registeredUser,
           values.displayName || '',
           values.phone || '',
           values.projectId,
         )
+
+        await associateUserWithProject(values.projectId, registeredUser.uid, token)
 
         navigate('/app/dashboard')
       } catch (error) {
@@ -110,7 +111,7 @@ const RegisterPage = () => {
     userId: string,
     token: string,
   ): Promise<void> => {
-    const response = await api.put(`/projects/${projectId}`, { user_id: userId }, token)
+    const response = await api.put(`/projects/${projectId}`, token, { user_id: userId })
 
     if (response.status !== 200) {
       throw new Error('Unable to associate account with Project ID. Please contact support.')

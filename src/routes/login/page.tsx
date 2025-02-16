@@ -126,14 +126,14 @@ const LoginPage = () => {
     try {
       await verifyProject(values.projectId, token)
 
-      await associateUserWithProject(values.projectId, currentUser.uid, token)
-
       await createUserDocument(
         currentUser,
         currentUser.displayName || '',
         currentUser.phoneNumber || '',
         values.projectId,
       )
+
+      await associateUserWithProject(values.projectId, currentUser.uid, token)
 
       resetFormState()
       navigate('/app/dashboard')
@@ -155,7 +155,7 @@ const LoginPage = () => {
   }
 
   const associateUserWithProject = async (projectId: string, userId: string, token: string) => {
-    const response = await api.put(`/projects/${projectId}`, { user_id: userId }, token)
+    const response = await api.put(`/projects/${projectId}`, token, { user_id: userId })
 
     if (response.status !== 200) {
       throw new Error('Unable to associate account with Project ID. Please contact support.')

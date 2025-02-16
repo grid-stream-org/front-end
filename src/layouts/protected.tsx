@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom'
 
 import { LoadingScreen } from '@/components'
-import { useAuth } from '@/context'
+import { MqttProvider, useAuth } from '@/context'
 
 export const Protected = () => {
   const { user, loading } = useAuth()
@@ -14,5 +14,9 @@ export const Protected = () => {
     return <Navigate to="/login" replace />
   }
 
-  return <Outlet />
+  return (
+    <MqttProvider>
+      <Outlet />
+    </MqttProvider>
+  )
 }

@@ -22,7 +22,7 @@ export class ApiError extends Error {
   }
 }
 
-class ApiClient {
+export class ApiClient {
   private client: AxiosInstance
 
   constructor(config: ApiConfig) {
@@ -55,7 +55,7 @@ class ApiClient {
     }
   }
 
-  async post<T, D>(path: string, data?: D, token?: string): Promise<ApiResponse<T>> {
+  async post<T, D>(path: string, token?: string, data?: D): Promise<ApiResponse<T>> {
     try {
       const headers = token ? { Authorization: `Bearer ${token}` } : undefined
       const response: AxiosResponse<T> = await this.client.post(path, data, {
@@ -70,7 +70,7 @@ class ApiClient {
     }
   }
 
-  async put<T, D>(path: string, data?: D, token?: string): Promise<ApiResponse<T>> {
+  async put<T, D>(path: string, token?: string, data?: D): Promise<ApiResponse<T>> {
     try {
       const headers = token ? { Authorization: `Bearer ${token}` } : undefined
       const response: AxiosResponse<T> = await this.client.put(path, data, {
