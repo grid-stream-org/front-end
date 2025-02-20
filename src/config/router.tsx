@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import { GenericError } from '@/components/generic-error'
 import { AppLayout, AuthLayout, ProtectedRoute, RootLayout } from '@/config/lazy'
 import { authRoutes, publicRoutes, protectedRoutes, createRouteConfig } from '@/config/routes'
+import NotFoundPage from '@/routes/not-found/page'
 
 export const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ export const router = createBrowserRouter([
             children: protectedRoutes.map(createRouteConfig),
           },
         ],
+      },
+      {
+        path: '*',
+        element: <NotFoundPage />,
       },
     ],
   },
