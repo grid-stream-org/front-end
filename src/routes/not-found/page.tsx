@@ -14,6 +14,16 @@ const NotFoundPage = () => {
         Sorry, the page you&apos;re looking for doesn&apos;t exist or has been moved.
       </p>
       <Button onClick={() => navigate('/app/dashboard')}>Go Back Home</Button>
+      <p className="text-sm text-muted-foreground mt-4">
+        <a
+          href="https://storyset.com/web"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-primary"
+        >
+          Web illustrations by Storyset
+        </a>
+      </p>
     </div>
   )
 }
