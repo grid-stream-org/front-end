@@ -14,6 +14,7 @@ const DevicesPage = () => {
   return (
     <>
       <PageTitle route={getAppRoute(location.pathname)} />
+      {/* TODO I made a generic summary-cards component that might be able to be used here but I don't have a good test account to test it */}
       <SummaryCards devices={devices} isConnected={isConnected} />
       <DeviceTable
         devices={devices}
