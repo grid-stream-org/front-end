@@ -77,6 +77,9 @@ const EventsPage = () => {
           <TabsTrigger value="upcoming" className="flex-1">
             Upcoming Events
           </TabsTrigger>
+          <TabsTrigger value="active" className="flex-1">
+            Active Events
+          </TabsTrigger>
           <TabsTrigger value="past" className="flex-1">
             Past Events
           </TabsTrigger>
@@ -91,6 +94,20 @@ const EventsPage = () => {
             <Card>
               <CardContent className="p-4 sm:p-6">
                 <p className="text-center text-muted-foreground">No upcoming events scheduled</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="active">
+          {loading ? (
+            [...Array(3)].map((_, idx) => <SkeletonCard key={idx} />)
+          ) : activeEvents.length > 0 ? (
+            activeEvents.map(event => <EventCard key={event.id} event={event} />)
+          ) : (
+            <Card>
+              <CardContent className="p-4 sm:p-6">
+                <p className="text-center text-muted-foreground">No active events</p>
               </CardContent>
             </Card>
           )}
