@@ -84,7 +84,15 @@ const protectedRoutes: AppRoute[] = [
   },
 ]
 
-export const routes = [...publicRoutes, ...protectedRoutes, ...authRoutes]
+const hiddenProtectedRoutes: Route[] = [
+  {
+    title: 'Account Management',
+    path: 'account',
+    component: () => import('@/routes/app/account'),
+  },
+]
+
+export const routes = [...publicRoutes, ...protectedRoutes, ...authRoutes, ...hiddenProtectedRoutes]
 
 export const getTitle = (pathname: string): string | undefined => {
   const path = pathname.includes('app') ? pathname.split('/app/')[1] : pathname.replace('/', '')
@@ -115,4 +123,4 @@ export const createRouteConfig = (route: Route): RouteObject => ({
 })
 
 export type { Route, AppRoute }
-export { protectedRoutes, publicRoutes, authRoutes }
+export { protectedRoutes, publicRoutes, authRoutes, hiddenProtectedRoutes }
