@@ -12,3 +12,10 @@ export type DER = {
   nameplate_capacity: number
   power_capacity: number
 }
+
+export type DREvent = {
+  id: string
+  start_time: string
+  end_time: string
+  utility_id: number
+}
