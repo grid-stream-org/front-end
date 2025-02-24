@@ -29,7 +29,7 @@ body {
   --theme-secondary: 260 60% 55%;
   --theme-accent: 200 90% 50%;
   --theme-muted: 220 30% 95%;
-  --theme-muted-foreground: 220 20% 40%;
+  --theme-muted-foreground: 220 20% 30%;
 
   font-optical-sizing: auto;
   font-synthesis: none;
