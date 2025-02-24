@@ -36,14 +36,16 @@ export const StaticChart = () => {
                   tickFormatter={val =>
                     new Date(val).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                   }
+                  tick={{ className: 'text-black dark:text-white' }} // Text is white in dark mode
                   tickLine={false}
                   axisLine={false}
-                  minTickGap={20} // Increase gap to avoid overlapping ticks on smaller screens
+                  minTickGap={20}
                   domain={['auto', 'auto']}
-                  interval="preserveStartEnd" // Try preserving the first and last ticks
+                  interval="preserveStartEnd"
                 />
                 <YAxis
-                  tickFormatter={(val: number) => `${val.toFixed(0)} kW`}
+                  tickFormatter={val => `${val.toFixed(0)} kW`}
+                  tick={{ className: 'text-black dark:text-white' }} // Text is white in dark mode
                   tickLine={false}
                   axisLine={false}
                 />

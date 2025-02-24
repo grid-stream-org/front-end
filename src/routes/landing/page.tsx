@@ -82,7 +82,7 @@ const LandingPage = () => {
 
       <div
         id="system"
-        className="p-16 bg-muted min-h-screen flex flex-col md:flex-row items-center dark:bg-gray-800 dark:text-white"
+        className="p-16 bg-muted min-h-screen flex flex-col md:flex-row items-center dark:muted dark:text-white"
       >
         {/* Chart Section */}
         <div className="w-full md:w-1/2 pr-0 md:pr-8 mb-8">
@@ -138,7 +138,7 @@ const LandingPage = () => {
       {/* About Us Section */}
       <div
         id="about"
-        className="p-16 min-h-screen flex justify-center bg-gradient-to-t from-secondary to-muted dark:from-gray-800 dark:to-gray-700"
+        className="p-16 min-h-screen flex justify-center bg-gradient-to-t from-secondary to-muted dark:secondary dark:to-muted"
       >
         <div className="w-3/4 p-8 bg-white shadow-lg rounded-2xl text-lg dark:bg-gray-900 dark:text-white">
           <h2 className="text-4xl font-bold mb-6 text-muted-foreground dark:text-white">
