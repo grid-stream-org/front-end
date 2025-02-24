@@ -135,7 +135,7 @@ const LandingPage = () => {
         className="p-16 min-h-screen flex justify-center bg-gradient-to-t from-secondary to-muted"
       >
         <div className="w-3/4 p-8 bg-white shadow-lg rounded-2xl text-lg">
-          <h2 className="text-4xl font-bold mb-6 text-foreground">About Us</h2>
+          <h2 className="text-4xl font-bold mb-6 text-muted-foreground">About Us</h2>
           <p className="text-lg text-muted-foreground mb-6">
             GridStream is revolutionizing DER2G technology by effectively managing and validating
             Distributed Energy Resource (DER) contracts between residential users and power
