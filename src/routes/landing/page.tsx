@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/logo'
 
-import { StaticChart } from './static-chart'
+import StaticChart from './static-chart'
 
 import { motion } from 'framer-motion'
 
-import CarSVG from '/img/wind-turbine-animate.svg'
-import ChartSVG from '/img/Environmental chart.svg'
+import CarSVG from '/src/assets/storyset/turbine.svg'
+import ChartSVG from '/src/assets/storyset/env-chart.svg'
 
 const LandingPage = () => {
   const navigate = useNavigate()
