@@ -18,6 +18,7 @@ jobs:
       - run: yarn lint
 
   typecheck:
+    needs: ['lint']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,6 +30,7 @@ jobs:
       - run: yarn tsc --noEmit
 
   test:
+    needs: ['lint', 'typecheck']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,6 +41,7 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn test
   build:
+    needs: ['lint', 'typecheck', 'test']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
