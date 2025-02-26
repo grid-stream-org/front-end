@@ -87,7 +87,7 @@ const LandingPage = () => {
           <h2 className="text-5xl font-bold mb-6 text-muted-foreground dark:text-white">
             Our System
           </h2>
-          <p className="text-2xl text-muted mb-8">
+          <p className="text-2xl text-muted-foreground mb-8">
             Our platform integrates with multiple energy providers, offering dynamic contract
             adjustments, predictive analytics, and a user-friendly dashboard for real-time
             monitoring.
