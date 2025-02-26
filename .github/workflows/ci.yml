@@ -29,6 +29,7 @@ jobs:
       - run: yarn tsc --noEmit
 
   test:
+    needs: ['lint', 'typecheck']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,3 +39,14 @@ jobs:
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
       - run: yarn test
+  build:
+    needs: ['test']
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
