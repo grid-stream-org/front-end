@@ -1,97 +1,135 @@
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis } from 'recharts'
+
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui'
+import { formatNumericDate } from '@/lib'
+
+const chartConfig = {
+  reduction: { label: 'Reduction', color: 'hsl(var(--chart-1))' },
+  baseline: { label: 'Baseline', color: 'hsl(var(--chart-2))' },
+  measurement: { label: 'Measurement', color: 'hsl(var(--chart-3))' },
+} satisfies ChartConfig
 
 const data = [
   {
     date: new Date('2025-02-24T19:00:00').getTime(),
-    Reduction: 10,
-    Baseline: 102,
-    Measurement: 78,
+    reduction: 10,
+    baseline: 102,
+    measurement: 78,
   },
   {
     date: new Date('2025-02-24T19:05:00').getTime(),
-    Reduction: 15,
-    Baseline: 108,
-    Measurement: 83,
+    reduction: 15,
+    baseline: 108,
+    measurement: 83,
   },
   {
     date: new Date('2025-02-24T19:15:00').getTime(),
-    Reduction: 20,
-    Baseline: 112,
-    Measurement: 92,
+    reduction: 20,
+    baseline: 112,
+    measurement: 92,
   },
   {
     date: new Date('2025-02-24T19:20:00').getTime(),
-    Reduction: 18,
-    Baseline: 118,
-    Measurement: 97,
+    reduction: 18,
+    baseline: 118,
+    measurement: 97,
   },
   {
     date: new Date('2025-02-24T19:25:00').getTime(),
-    Reduction: 22,
-    Baseline: 122,
-    Measurement: 101,
+    reduction: 22,
+    baseline: 122,
+    measurement: 101,
   },
   {
     date: new Date('2025-02-24T19:30:00').getTime(),
-    Reduction: 25,
-    Baseline: 119,
-    Measurement: 96,
+    reduction: 25,
+    baseline: 119,
+    measurement: 96,
   },
   {
     date: new Date('2025-02-24T19:35:00').getTime(),
-    Reduction: 28,
-    Baseline: 113,
-    Measurement: 94,
+    reduction: 28,
+    baseline: 113,
+    measurement: 94,
   },
   {
     date: new Date('2025-02-24T19:40:00').getTime(),
-    Reduction: 30,
-    Baseline: 117,
-    Measurement: 99,
+    reduction: 30,
+    baseline: 117,
+    measurement: 99,
   },
   {
     date: new Date('2025-02-24T19:45:00').getTime(),
-    Reduction: 26,
-    Baseline: 110,
-    Measurement: 89,
+    reduction: 26,
+    baseline: 110,
+    measurement: 89,
   },
   {
     date: new Date('2025-02-24T19:50:00').getTime(),
-    Reduction: 24,
-    Baseline: 108,
-    Measurement: 85,
+    reduction: 24,
+    baseline: 108,
+    measurement: 85,
   },
   {
     date: new Date('2025-02-24T19:55:00').getTime(),
-    Reduction: 20,
-    Baseline: 105,
-    Measurement: 87,
+    reduction: 20,
+    baseline: 105,
+    measurement: 87,
   },
   {
     date: new Date('2025-02-24T20:00:00').getTime(),
-    Reduction: 18,
-    Baseline: 107,
-    Measurement: 90,
+    reduction: 18,
+    baseline: 107,
+    measurement: 90,
   },
 ]
 
-const formatXAxis = tick => {
-  return new Date(tick).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
-
 const StaticChart = () => {
   return (
-    <ResponsiveContainer width="100%" height={400}>
+    <ChartContainer config={chartConfig} className="h-[300px] w-full">
       <LineChart data={data}>
-        <XAxis dataKey="date" tickFormatter={formatXAxis} />
+        <XAxis dataKey="date" tickFormatter={formatNumericDate} />
         <YAxis />
-        <Tooltip labelFormatter={formatXAxis} />
-        <Legend />
-        <Line type="monotone" dataKey="Reduction" stroke="#c1121f" strokeWidth={2} dot={false} />
-        <Line type="monotone" dataKey="Baseline" stroke="#669bbc" strokeWidth={2} dot={false} />
-        <Line type="monotone" dataKey="Measurement" stroke="#ff7300" strokeWidth={2} dot={false} />
+        <ChartTooltip
+          cursor
+          content={
+            <ChartTooltipContent
+              labelFormatter={(_, payload) => formatNumericDate(payload[0].payload.date) || ''}
+              indicator="dot"
+            />
+          }
+        />
+        <ChartLegend content={<ChartLegendContent />} />
+        <Line
+          type="monotone"
+          dataKey="reduction"
+          stroke="var(--color-reduction)"
+          strokeWidth={2}
+          dot={false}
+        />
+        <Line
+          type="monotone"
+          dataKey="baseline"
+          stroke="var(--color-baseline)"
+          strokeWidth={2}
+          dot={false}
+        />
+        <Line
+          type="monotone"
+          dataKey="measurement"
+          stroke="var(--color-measurement)"
+          strokeWidth={2}
+          dot={false}
+        />
       </LineChart>
-    </ResponsiveContainer>
+    </ChartContainer>
   )
 }
 
