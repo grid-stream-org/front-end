@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Input } from '@/components/ui'
-import { AppRoute, protectedRoutes } from '@/config'
+import { AppRoute, protectedRoutes, hiddenProtectedRoutes } from '@/config'
 
 export const SearchBar = () => {
   const [query, setQuery] = useState('')
@@ -23,11 +23,18 @@ export const SearchBar = () => {
       return
     }
 
-    const searchResults = protectedRoutes.filter(
-      route =>
-        route.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        route.description.toLowerCase().includes(searchQuery.toLowerCase()),
-    )
+    const searchResults = [
+      ...protectedRoutes.filter(
+        route =>
+          route.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          route.description.toLowerCase().includes(searchQuery.toLowerCase()),
+      ),
+      ...hiddenProtectedRoutes.filter(
+        route =>
+          route.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          route.description.toLowerCase().includes(searchQuery.toLowerCase()),
+      ),
+    ]
 
     setResults(searchResults)
   }, [])

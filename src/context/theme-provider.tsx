@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { Toaster } from 'sonner'
 
 type Theme = 'dark' | 'light' | 'system'
 
@@ -56,6 +57,7 @@ export const ThemeProvider = ({
   return (
     <ThemeProviderContext.Provider {...props} value={value}>
       {children}
+      <Toaster richColors position="bottom-right" />
     </ThemeProviderContext.Provider>
   )
 }

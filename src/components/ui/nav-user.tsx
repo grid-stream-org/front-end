@@ -1,6 +1,7 @@
 'use client'
 
 import { BadgeCheck, Bell, ChevronsUpDown, LogOut } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -32,6 +33,7 @@ export const NavUser = ({
 }) => {
   const { isMobile } = useSidebar()
   const { logout } = useAuth()
+  const navigate = useNavigate()
 
   const getInitials = (name: string): string => {
     if (!name) {
@@ -43,6 +45,10 @@ export const NavUser = ({
       .map(word => word.charAt(0))
       .join('')
       .toUpperCase()
+  }
+
+  const handleAccountManagement = () => {
+    navigate('/app/account')
   }
 
   return (
@@ -86,7 +92,7 @@ export const NavUser = ({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="hover:cursor-pointer">
+              <DropdownMenuItem onClick={handleAccountManagement} className="hover:cursor-pointer">
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>

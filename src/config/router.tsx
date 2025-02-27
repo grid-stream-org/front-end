@@ -2,7 +2,13 @@ import { createBrowserRouter } from 'react-router-dom'
 
 import { GenericError } from '@/components/generic-error'
 import { AppLayout, AuthLayout, ProtectedRoute, RootLayout } from '@/config/lazy'
-import { authRoutes, publicRoutes, protectedRoutes, createRouteConfig } from '@/config/routes'
+import {
+  authRoutes,
+  publicRoutes,
+  protectedRoutes,
+  createRouteConfig,
+  hiddenProtectedRoutes,
+} from '@/config/routes'
 
 export const router = createBrowserRouter([
   {
@@ -20,7 +26,10 @@ export const router = createBrowserRouter([
         children: [
           {
             element: <AppLayout />,
-            children: protectedRoutes.map(createRouteConfig),
+            children: [
+              ...protectedRoutes.map(createRouteConfig),
+              ...hiddenProtectedRoutes.map(createRouteConfig),
+            ],
           },
         ],
       },

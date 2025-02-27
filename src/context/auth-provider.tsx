@@ -8,6 +8,9 @@ import {
   signInWithPopup,
   sendPasswordResetEmail,
   type User,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
 } from 'firebase/auth'
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 
@@ -17,22 +20,19 @@ import { AuthResponse, UserData, UserRole } from '@/types'
 interface AuthContextType {
   user: UserData | null
   loading: boolean
+  isGoogleSignIn: boolean
   // eslint-disable-next-line no-unused-vars
   login: (email: string, password: string) => Promise<void>
-
-  register: (
-    // eslint-disable-next-line no-unused-vars
-    email: string,
-    // eslint-disable-next-line no-unused-vars
-    password: string,
-  ) => Promise<AuthResponse>
+  // eslint-disable-next-line no-unused-vars
+  register: (email: string, password: string) => Promise<AuthResponse>
   loginWithGoogle: () => Promise<AuthResponse>
   logout: () => Promise<void>
   // eslint-disable-next-line no-unused-vars
   updateProfile: (data: Partial<UserData>) => Promise<void>
   // eslint-disable-next-line no-unused-vars
   resetPassword: (email: string) => Promise<void>
-
+  // eslint-disable-next-line no-unused-vars
+  updateUserPassword: (currentPassword: string, newPassword: string) => Promise<void>
   createUserDocument: (
     // eslint-disable-next-line no-unused-vars
     user: User,
@@ -51,11 +51,11 @@ const db = getFirestore()
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isGoogleSignIn, setIsGoogleSignIn] = useState(false)
 
   const fetchUserData = async (uid: string) => {
     const userDoc = await getDoc(doc(db, 'users', uid))
-    const exists = userDoc.exists()
-    if (exists) {
+    if (userDoc.exists()) {
       const data = userDoc.data()
       const userData: UserData = {
         uid: data.uid,
@@ -98,10 +98,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, async user => {
       if (!user) {
         setUser(null)
+        setIsGoogleSignIn(false)
         setLoading(false)
         return
       }
-      auth.updateCurrentUser(user)
+      // Check Google sign-in
+      const isGoogle = user.providerData.some(provider => provider.providerId === 'google.com')
+      setIsGoogleSignIn(isGoogle)
+
       await fetchUserData(user.uid)
       setLoading(false)
     })
@@ -122,15 +126,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const loginWithGoogle = async (): Promise<AuthResponse> => {
     const provider = new GoogleAuthProvider()
     const result = await signInWithPopup(auth, provider)
-
     const userDoc = await getDoc(doc(db, 'users', result.user.uid))
+
+    setIsGoogleSignIn(true)
     return { exists: userDoc.exists(), user: result.user }
   }
 
   const updateProfile = async (data: Partial<UserData>) => {
-    if (!user) {
-      throw new Error('No user logged in')
-    }
+    if (!user) throw new Error('No user logged in')
 
     const updatedData = {
       ...data,
@@ -143,15 +146,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     await signOut(auth)
+    setIsGoogleSignIn(false) // Reset on logout to be safe
   }
 
   const resetPassword = async (email: string) => {
     await sendPasswordResetEmail(auth, email)
   }
 
+  const updateUserPassword = async (currentPassword: string, newPassword: string) => {
+    if (!auth.currentUser || !auth.currentUser.email) {
+      throw new Error('No user is currently logged in.')
+    }
+
+    // Reauthenticate the user
+    const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword)
+    await reauthenticateWithCredential(auth.currentUser, credential)
+    await updatePassword(auth.currentUser, newPassword)
+
+    // update Firestore metadata
+    if (user) {
+      await setDoc(doc(db, 'users', user.uid), { updatedAt: new Date() }, { merge: true })
+      await fetchUserData(user.uid) // Refresh user state
+    }
+  }
+
   const value = {
     user,
     loading,
+    isGoogleSignIn,
+    updateUserPassword,
     login,
     register,
     updateProfile,
