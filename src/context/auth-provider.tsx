@@ -95,20 +95,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async firebaseUser => {
-      if (!firebaseUser) {
+    const unsubscribe = onAuthStateChanged(auth, async user => {
+      if (!user) {
         setUser(null)
         setIsGoogleSignIn(false)
         setLoading(false)
         return
       }
       // Check Google sign-in
-      const isGoogle = firebaseUser.providerData.some(
-        provider => provider.providerId === 'google.com',
-      )
+      const isGoogle = user.providerData.some(provider => provider.providerId === 'google.com')
       setIsGoogleSignIn(isGoogle)
 
-      await fetchUserData(firebaseUser.uid)
+      await fetchUserData(user.uid)
       setLoading(false)
     })
 
