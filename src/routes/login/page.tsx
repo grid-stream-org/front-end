@@ -146,7 +146,7 @@ const LoginPage = () => {
   }
 
   const verifyProject = async (projectId: string, token: string): Promise<void> => {
-    const response = await api.get(`/projects/${projectId}`, token)
+    const response = await (`/projects/${projectId}`, token)
     const project = response.data as Project
 
     if (response.status !== 200 || project.user_id !== '') {
