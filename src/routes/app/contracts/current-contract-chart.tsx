@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,10 +12,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/context'
-import { createContract } from '@/hooks/use-contracts'
+import { createContract, fetchContractById, deleteContract } from '@/hooks/use-contracts'
 
 const CurrentContract = ({
-  contract,
   onContractCreated,
   baselineOffload = 100, // NEED TO GET THIS FROM API
 }) => {
@@ -24,9 +23,35 @@ const CurrentContract = ({
   const [offloadAmount, setOffloadAmount] = useState(baselineOffload)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [contract, setContract] = useState(null)
+  const [isLoadingContract, setIsLoadingContract] = useState(false)
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false) // For confirmation dialog
+  const [confirmationProjectId, setConfirmationProjectId] = useState('') // Store project ID for confirmation
 
   const today = new Date()
   const currentDateTime = today.toISOString().split('T')[0]
+
+  const contractId = '03e21f6c-1663-4d2c-a2fd-6154aa723d1f'
+
+  // Fetch contract data when contractId changes
+  useEffect(() => {
+    const getContract = async () => {
+      if (contractId) {
+        setIsLoadingContract(true)
+        try {
+          const contractData = await fetchContractById(contractId)
+          setContract(contractData)
+        } catch (err) {
+          console.error('Error fetching contract:', err)
+          setError('Failed to load contract details')
+        } finally {
+          setIsLoadingContract(false)
+        }
+      }
+    }
+
+    getContract()
+  }, [contractId])
 
   const handleSubmit = async () => {
     setIsLoading(true)
@@ -41,22 +66,62 @@ const CurrentContract = ({
       const result = await createContract(user, newContract)
 
       if (result) {
-        setIsModalOpen(false)
-        if (onContractCreated) {
-          onContractCreated() // Refresh the contracts list
+        const fetchedContract = await fetchContractById(contractId) // Replace with your API call
+
+        if (fetchedContract) {
+          setIsModalOpen(false)
+          setContract(fetchedContract) // Update the local state with the fetched contract details
+
+          if (onContractCreated) {
+            onContractCreated(fetchedContract) // Pass the new contract to parent
+          }
+        } else {
+          setError('Failed to fetch contract details')
         }
       } else {
         setError('Failed to create contract')
       }
     } catch (err) {
-      console.error(`Failed to fetch contracts: Status ${err}`)
+      console.error('Error creating contract:', err)
       setError('Error creating contract')
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Process contract data if available
+  const handleTerminate = () => {
+    // Open confirmation dialog
+    setIsConfirmationOpen(true)
+  }
+
+  const handleConfirmTermination = async () => {
+    if (confirmationProjectId !== user.projectId) {
+      setError('Project ID does not match. Cannot terminate contract.')
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const success = await deleteContract(user, contract.id)
+
+      if (success) {
+        setIsConfirmationOpen(false) // Close confirmation dialog
+        setContract(null) // Clear contract data as it's terminated
+        if (onContractCreated) {
+          onContractCreated() // Notify parent if needed
+        }
+      } else {
+        setError('Failed to terminate contract')
+      }
+    } catch (err) {
+      console.error('Error terminating contract:', err)
+      setError('Error terminating contract')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const activeContract = contract
     ? {
         id: contract.id,
@@ -76,7 +141,9 @@ const CurrentContract = ({
         <CardTitle>Current Contract</CardTitle>
       </CardHeader>
       <CardContent>
-        {activeContract ? (
+        {isLoadingContract ? (
+          <div className="text-center">Loading contract details...</div>
+        ) : activeContract ? (
           <div className="space-y-3">
             <p>Project ID: {activeContract.projectId}</p>
             <p>Offload Amount: {activeContract.offloadAmount} kW</p>
@@ -84,15 +151,7 @@ const CurrentContract = ({
             <p>End Date: {activeContract.endDate}</p>
             <p>Status: {isPending ? 'Pending Approval' : activeContract.status}</p>
             {!isPending && (
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  // Handle termination through parent component
-                  if (onContractCreated) {
-                    onContractCreated()
-                  }
-                }}
-              >
+              <Button variant="destructive" onClick={handleTerminate}>
                 Terminate Contract
               </Button>
             )}
@@ -108,6 +167,44 @@ const CurrentContract = ({
 
         {error && <div className="mt-2 text-red-500">{error}</div>}
       </CardContent>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={isConfirmationOpen} onOpenChange={setIsConfirmationOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Confirm Contract Termination for Project: <br />
+              <span className="text-sm text-muted-foreground">{user.projectId}</span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Enter Project ID to Confirm Termination</Label>
+              <Input
+                type="text"
+                value={confirmationProjectId}
+                onChange={e => setConfirmationProjectId(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              className="text-white"
+              onClick={() => setIsConfirmationOpen(false)}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="text-white"
+              onClick={handleConfirmTermination}
+              disabled={isLoading || confirmationProjectId !== user.projectId}
+            >
+              {isLoading ? 'Terminating...' : 'Confirm Termination'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>

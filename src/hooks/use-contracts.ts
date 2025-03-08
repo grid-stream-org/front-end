@@ -27,10 +27,7 @@ export const fetchContracts = async (user: UserData): Promise<Contract[]> => {
 }
 
 // Create a new contract
-export const createContract = async (
-  user: UserData,
-  newContract: NewContractInput,
-): Promise<Contract | null> => {
+export const createContract = async (user: UserData, newContract: NewContractInput) => {
   if (!auth.currentUser) {
     throw new Error('User not authenticated')
   }
@@ -48,14 +45,14 @@ export const createContract = async (
       contract_threshold: newContract.offloadAmount,
       start_date: today.toISOString().split('T')[0],
       end_date: endDate.toISOString().split('T')[0],
-      status: 'pending',
+      status: 'active',
       project_id: user.projectId,
     }
 
-    const { data, status } = await api.post('/contracts', contractData, token)
-
+    const { status } = await api.post('/contracts', token, contractData)
     if (status === 201) {
-      return data as Contract
+      console.log('Contract created successfully:')
+      return true
     } else {
       console.error(`Failed to create contract: Status ${status}`)
       return null
@@ -86,5 +83,27 @@ export const deleteContract = async (user: UserData, contractId: string): Promis
   } catch (error) {
     console.error('Error deleting contract:', error)
     return false
+  }
+}
+
+// Get contract by ID
+export const fetchContractById = async (contractId: string): Promise<Contract | null> => {
+  if (!auth.currentUser) {
+    throw new Error('User not authenticated')
+  }
+
+  try {
+    const token = await auth.currentUser.getIdToken()
+    const { data, status } = await api.get(`/contracts/${contractId}`, token)
+
+    if (status === 200) {
+      return data as Contract
+    } else {
+      console.error(`Failed to fetch contract: Status ${status}`)
+      return null
+    }
+  } catch (error) {
+    console.error(`Error fetching contract ${contractId}:`, error)
+    return null
   }
 }
