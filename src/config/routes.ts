@@ -5,6 +5,7 @@ import {
   Gauge,
   Calendar,
   SatelliteDish,
+  BadgeCheck,
 } from 'lucide-react'
 import { Location, RouteObject } from 'react-router-dom'
 
@@ -84,7 +85,17 @@ const protectedRoutes: AppRoute[] = [
   },
 ]
 
-export const routes = [...publicRoutes, ...protectedRoutes, ...authRoutes]
+const hiddenProtectedRoutes: AppRoute[] = [
+  {
+    title: 'Account Management',
+    icon: BadgeCheck,
+    description: 'Manage and review your account',
+    path: 'account',
+    component: () => import('@/routes/app/account'),
+  },
+]
+
+export const routes = [...publicRoutes, ...protectedRoutes, ...authRoutes, ...hiddenProtectedRoutes]
 
 export const getTitle = (pathname: string): string | undefined => {
   const path = pathname.includes('app') ? pathname.split('/app/')[1] : pathname.replace('/', '')
@@ -102,7 +113,7 @@ export const isAppRoute = (route: Route): route is AppRoute =>
 
 export const getAppRoute = (pathname: string): AppRoute | undefined => {
   const path = pathname.includes('app') ? pathname.split('/app/')[1] : pathname.replace('/', '')
-  return protectedRoutes.find(route => route.path === path)
+  return [...protectedRoutes, ...hiddenProtectedRoutes].find(route => route.path === path)
 }
 
 export const getAppRoutes = (): AppRoute[] => routes.filter(isAppRoute)
@@ -115,4 +126,4 @@ export const createRouteConfig = (route: Route): RouteObject => ({
 })
 
 export type { Route, AppRoute }
-export { protectedRoutes, publicRoutes, authRoutes }
+export { protectedRoutes, publicRoutes, authRoutes, hiddenProtectedRoutes }
