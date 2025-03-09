@@ -1,8 +1,17 @@
-import { useEffect, useState } from 'react'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { useState } from 'react'
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Table,
   TableBody,
@@ -12,46 +21,35 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useAuth } from '@/context'
-import { fetchContracts, deleteContract } from '@/hooks/use-contracts'
+import { deleteContract } from '@/hooks/use-contracts'
 
-const ContractHistory = () => {
+const ContractHistory = ({ contracts, isLoading, error, onContractDeleted }) => {
   const { user } = useAuth()
-  const [contracts, setContracts] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedContract, setSelectedContract] = useState(null)
+  const [projectIdInput, setProjectIdInput] = useState('')
 
-  useEffect(() => {
-    const loadContracts = async () => {
-      setLoading(true)
-      try {
-        const contractsData = await fetchContracts(user)
-        setContracts(contractsData)
-      } catch (err) {
-        setError('Failed to load contracts')
-        console.log(err)
-      } finally {
-        setLoading(false)
-      }
-    }
+  const handleDelete = async () => {
+    if (!selectedContract || projectIdInput !== selectedContract.projectId) return
 
-    if (user) {
-      loadContracts()
-    }
-  }, [user])
-
-  const handleDelete = async contractId => {
     try {
-      const success = await deleteContract(user, contractId)
-      if (success) {
-        setContracts(contracts.filter(contract => contract.id !== contractId))
+      const success = await deleteContract(user, selectedContract.id)
+      if (success && onContractDeleted) {
+        onContractDeleted()
       }
+      setIsDialogOpen(false)
     } catch (err) {
-      setError('Failed to delete contract')
-      console.log(err)
+      console.error('Failed to delete contract:', err)
     }
   }
 
-  // Process contract data for display
+  const openDeleteDialog = contract => {
+    setSelectedContract(contract)
+    setProjectIdInput('')
+    setIsDialogOpen(true)
+  }
+
+  //Format contracts for display in chart
   const processedContracts = contracts.map(contract => ({
     id: contract.id,
     year: new Date(contract.start_date).getFullYear(),
@@ -62,19 +60,21 @@ const ContractHistory = () => {
     status: contract.status,
   }))
 
-  // Aggregate total offload per year
-  const yearlyOffload = processedContracts.reduce((acc, contract) => {
+  const filteredContracts = processedContracts.filter(
+    contract => contract.status === 'active' || contract.status === 'inactive',
+  )
+
+  const yearlyOffload = filteredContracts.reduce((acc, contract) => {
     acc[contract.year] = (acc[contract.year] || 0) + contract.offloadAmount
     return acc
   }, {})
 
-  // Format data for the chart
   const barData = Object.keys(yearlyOffload).map(year => ({
     year,
     offload: yearlyOffload[year],
   }))
 
-  if (loading) return <div>Loading contracts...</div>
+  if (isLoading) return <div>Loading contracts...</div>
   if (error) return <div>Error: {error}</div>
 
   return (
@@ -111,7 +111,7 @@ const ContractHistory = () => {
                     <Button
                       variant="destructive"
                       size="sm"
-                      onClick={() => handleDelete(contract.id)}
+                      onClick={() => openDeleteDialog(contract)}
                     >
                       Delete
                     </Button>
@@ -123,7 +123,6 @@ const ContractHistory = () => {
         </Table>
       </CardContent>
 
-      {/* Bar Chart: Offload Amount Over the Years */}
       {barData.length > 0 && (
         <CardContent>
           <CardTitle className="mb-4">Offload History</CardTitle>
@@ -131,12 +130,47 @@ const ContractHistory = () => {
             <BarChart data={barData}>
               <XAxis dataKey="year" />
               <YAxis />
-              <Tooltip />
-              <Bar dataKey="offload" fill="#3B82F6" />
+              <Bar dataKey="offload" fill="#1E40AF" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
       )}
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Confirm Contract Termination
+              <br />
+              <span className="text-sm text-muted-foreground">
+                Project ID: {selectedContract?.projectId}
+              </span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Enter Project ID to Confirm Termination</Label>
+              <Input
+                type="text"
+                value={projectIdInput}
+                onChange={e => setProjectIdInput(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={projectIdInput !== selectedContract?.projectId}
+            >
+              {isLoading ? 'Terminating...' : 'Confirm Termination'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   )
 }

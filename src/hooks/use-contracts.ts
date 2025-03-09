@@ -12,7 +12,6 @@ export const fetchContracts = async (user: UserData): Promise<Contract[]> => {
   }
   try {
     const token = await auth.currentUser.getIdToken()
-    //NEED AN API FOR THIS
     const { data, status } = await api.get(`/contracts/project/${user.projectId}`, token)
     if (status === 200) {
       return data as Contract[]
@@ -26,6 +25,17 @@ export const fetchContracts = async (user: UserData): Promise<Contract[]> => {
   }
 }
 
+// Get active contract
+export const fetchActiveContract = async (user: UserData): Promise<Contract | null> => {
+  try {
+    const contracts = await fetchContracts(user)
+    return contracts.find(contract => contract.status === 'active') || null
+  } catch (error) {
+    console.error('Error fetching active contract:', error)
+    return null
+  }
+}
+
 // Create a new contract
 export const createContract = async (user: UserData, newContract: NewContractInput) => {
   if (!auth.currentUser) {
@@ -35,23 +45,22 @@ export const createContract = async (user: UserData, newContract: NewContractInp
   try {
     const token = await auth.currentUser.getIdToken()
 
-    // Format dates for our DB
+    // Format dates
     const today = new Date()
     const endDate = new Date(today)
     endDate.setDate(today.getDate() + 365) // One year contract
 
     const contractData = {
-      id: 'string', // not sure how this is genereated
+      id: 'string', //gets replaced
       contract_threshold: newContract.offloadAmount,
       start_date: today.toISOString().split('T')[0],
       end_date: endDate.toISOString().split('T')[0],
-      status: 'active',
+      status: 'pending', //pending for utility
       project_id: user.projectId,
     }
 
     const { status } = await api.post('/contracts', token, contractData)
     if (status === 201) {
-      console.log('Contract created successfully:')
       return true
     } else {
       console.error(`Failed to create contract: Status ${status}`)
@@ -64,14 +73,13 @@ export const createContract = async (user: UserData, newContract: NewContractInp
 }
 
 // Delete a contract
-export const deleteContract = async (user: UserData, contractId: string): Promise<boolean> => {
+export const deleteContract = async (contractId: string): Promise<boolean> => {
   if (!auth.currentUser) {
     throw new Error('User not authenticated')
   }
 
   try {
     const token = await auth.currentUser.getIdToken()
-    //NEED TO SEE HOW WE GET CONTRACTID
     const { status } = await api.delete(`/contracts/${contractId}`, token)
 
     if (status === 200 || status === 204) {

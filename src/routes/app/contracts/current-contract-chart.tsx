@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,46 +12,24 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/context'
-import { createContract, fetchContractById, deleteContract } from '@/hooks/use-contracts'
+import { createContract, deleteContract } from '@/hooks/use-contracts'
 
 const CurrentContract = ({
+  contract,
+  isLoading: isLoadingContract,
   onContractCreated,
-  baselineOffload = 100, // NEED TO GET THIS FROM API
+  baselineOffload = 50,
 }) => {
   const { user } = useAuth()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [offloadAmount, setOffloadAmount] = useState(baselineOffload)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [contract, setContract] = useState(null)
-  const [isLoadingContract, setIsLoadingContract] = useState(false)
-  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false) // For confirmation dialog
-  const [confirmationProjectId, setConfirmationProjectId] = useState('') // Store project ID for confirmation
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false)
+  const [confirmationProjectId, setConfirmationProjectId] = useState('')
 
   const today = new Date()
   const currentDateTime = today.toISOString().split('T')[0]
-
-  const contractId = '03e21f6c-1663-4d2c-a2fd-6154aa723d1f'
-
-  // Fetch contract data when contractId changes
-  useEffect(() => {
-    const getContract = async () => {
-      if (contractId) {
-        setIsLoadingContract(true)
-        try {
-          const contractData = await fetchContractById(contractId)
-          setContract(contractData)
-        } catch (err) {
-          console.error('Error fetching contract:', err)
-          setError('Failed to load contract details')
-        } finally {
-          setIsLoadingContract(false)
-        }
-      }
-    }
-
-    getContract()
-  }, [contractId])
 
   const handleSubmit = async () => {
     setIsLoading(true)
@@ -66,17 +44,10 @@ const CurrentContract = ({
       const result = await createContract(user, newContract)
 
       if (result) {
-        const fetchedContract = await fetchContractById(contractId) // Replace with your API call
+        setIsModalOpen(false)
 
-        if (fetchedContract) {
-          setIsModalOpen(false)
-          setContract(fetchedContract) // Update the local state with the fetched contract details
-
-          if (onContractCreated) {
-            onContractCreated(fetchedContract) // Pass the new contract to parent
-          }
-        } else {
-          setError('Failed to fetch contract details')
+        if (onContractCreated) {
+          onContractCreated() // Refresh contracts in parent
         }
       } else {
         setError('Failed to create contract')
@@ -90,7 +61,6 @@ const CurrentContract = ({
   }
 
   const handleTerminate = () => {
-    // Open confirmation dialog
     setIsConfirmationOpen(true)
   }
 
@@ -106,10 +76,10 @@ const CurrentContract = ({
       const success = await deleteContract(user, contract.id)
 
       if (success) {
-        setIsConfirmationOpen(false) // Close confirmation dialog
-        setContract(null) // Clear contract data as it's terminated
+        setIsConfirmationOpen(false)
+
         if (onContractCreated) {
-          onContractCreated() // Notify parent if needed
+          onContractCreated() // Refresh contracts in parent
         }
       } else {
         setError('Failed to terminate contract')
@@ -189,14 +159,14 @@ const CurrentContract = ({
           </div>
           <DialogFooter>
             <Button
-              className="text-white"
+              variant="ghost"
               onClick={() => setIsConfirmationOpen(false)}
               disabled={isLoading}
             >
               Cancel
             </Button>
             <Button
-              className="text-white"
+              variant="destructive"
               onClick={handleConfirmTermination}
               disabled={isLoading || confirmationProjectId !== user.projectId}
             >
@@ -223,7 +193,7 @@ const CurrentContract = ({
               </p>
               <Input
                 type="number"
-                min="0"
+                min=""
                 max={baselineOffload}
                 value={offloadAmount}
                 onChange={e => setOffloadAmount(Number(e.target.value))}
