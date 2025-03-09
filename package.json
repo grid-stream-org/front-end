@@ -9,6 +9,7 @@
     "test": "echo 'Not setup yet'",
     "lint": "eslint . --fix",
     "preview": "vite preview",
+    "type-check": "tsc -b",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\"",
     "postinstall": "husky"
   },
