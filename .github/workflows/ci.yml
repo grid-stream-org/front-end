@@ -24,7 +24,7 @@ jobs:
           node-version: 'lts/*'
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
-      - run: yarn tsc --noEmit
+      - run: yarn tsc -b
 
   test:
     needs: ['lint', 'typecheck']

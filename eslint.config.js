@@ -24,7 +24,7 @@ export default tseslint.config(
     settings: {
       react: { version: '18.3' },
     },
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    extends: [js.configs.recommended, ...tseslint.configs.recommended, ...tseslint.configs.strict],
     plugins: {
       'react': pluginReact,
       'react-hooks': reactHooks,
@@ -41,6 +41,7 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': 'off',
       'react/jsx-no-target-blank': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
       'react/prop-types': 'off',
       'prettier/prettier': ['error'],
       ...prettierConfig.rules,
