@@ -14,34 +14,65 @@ import { Label } from '@/components/ui/label'
 import { useAuth } from '@/context'
 import { createContract, deleteContract } from '@/hooks/use-contracts'
 
+// Define interfaces
+interface ContractData {
+  id: string
+  project_id: string
+  contract_threshold: number
+  start_date: string
+  end_date: string
+  status: string
+}
+
+interface ProcessedContract {
+  id: string
+  projectId: string
+  offloadAmount: number
+  startDate: string
+  endDate: string
+  status: string
+}
+
+interface NewContract {
+  offloadAmount: number
+  projectId: string
+}
+
+interface CurrentContractProps {
+  contract: ContractData | null
+  isLoading: boolean
+  onContractCreated?: () => void
+  baselineOffload?: number
+}
+
 const CurrentContract = ({
   contract,
   isLoading: isLoadingContract,
   onContractCreated,
   baselineOffload = 50,
-}) => {
+}: CurrentContractProps) => {
   const { user } = useAuth()
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [offloadAmount, setOffloadAmount] = useState(baselineOffload)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false)
-  const [confirmationProjectId, setConfirmationProjectId] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [offloadAmount, setOffloadAmount] = useState<number>(baselineOffload)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState<boolean>(false)
+  const [confirmationProjectId, setConfirmationProjectId] = useState<string>('')
 
   const today = new Date()
   const currentDateTime = today.toISOString().split('T')[0]
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const newContract = {
+      const newContract: NewContract = {
         offloadAmount,
-        projectId: user.projectId,
+        projectId: user!.projectId,
       }
 
-      const result = await createContract(user, newContract)
+      const result = await createContract(user!, newContract)
 
       if (result) {
         setIsModalOpen(false)
@@ -60,12 +91,12 @@ const CurrentContract = ({
     }
   }
 
-  const handleTerminate = () => {
+  const handleTerminate = (): void => {
     setIsConfirmationOpen(true)
   }
 
-  const handleConfirmTermination = async () => {
-    if (confirmationProjectId !== user.projectId) {
+  const handleConfirmTermination = async (): Promise<void> => {
+    if (confirmationProjectId !== user!.projectId) {
       setError('Project ID does not match. Cannot terminate contract.')
       return
     }
@@ -73,7 +104,11 @@ const CurrentContract = ({
     setIsLoading(true)
 
     try {
-      const success = await deleteContract(user, contract.id)
+      if (!contract) {
+        throw new Error('No contract to terminate')
+      }
+
+      const success = await deleteContract(contract.id)
 
       if (success) {
         setIsConfirmationOpen(false)
@@ -92,7 +127,7 @@ const CurrentContract = ({
     }
   }
 
-  const activeContract = contract
+  const activeContract: ProcessedContract | null = contract
     ? {
         id: contract.id,
         projectId: contract.project_id,
@@ -144,7 +179,7 @@ const CurrentContract = ({
           <DialogHeader>
             <DialogTitle>
               Confirm Contract Termination for Project: <br />
-              <span className="text-sm text-muted-foreground">{user.projectId}</span>
+              <span className="text-sm text-muted-foreground">{user!.projectId}</span>
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
@@ -168,7 +203,7 @@ const CurrentContract = ({
             <Button
               variant="destructive"
               onClick={handleConfirmTermination}
-              disabled={isLoading || confirmationProjectId !== user.projectId}
+              disabled={isLoading || confirmationProjectId !== user!.projectId}
             >
               {isLoading ? 'Terminating...' : 'Confirm Termination'}
             </Button>
@@ -193,7 +228,7 @@ const CurrentContract = ({
               </p>
               <Input
                 type="number"
-                min=""
+                min="0"
                 max={baselineOffload}
                 value={offloadAmount}
                 onChange={e => setOffloadAmount(Number(e.target.value))}

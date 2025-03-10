@@ -12,6 +12,7 @@ export const fetchContracts = async (user: UserData): Promise<Contract[]> => {
   }
   try {
     const token = await auth.currentUser.getIdToken()
+    console.log(token)
     const { data, status } = await api.get(`/contracts/project/${user.projectId}`, token)
     if (status === 200) {
       return data as Contract[]
