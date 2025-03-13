@@ -1,24 +1,18 @@
 import { useState, useEffect } from 'react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useAuth } from '@/context'
-import { fetchEvents } from '@/hooks/fetch-events'
 import { DREvent } from '@/types'
 
-const DemandResponseEvent = () => {
+export const DemandResponseEvent = ({ events }: { events: DREvent[] }) => {
   const [nextEvent, setNextEvent] = useState<DREvent | null>(null)
   const [lastEvent, setLastEvent] = useState<DREvent | null>(null)
   const [loading, setLoading] = useState(true)
-  const { user } = useAuth()
 
   useEffect(() => {
     const loadEvents = async () => {
-      if (!user) return
       try {
-        const data = await fetchEvents(user)
-
         // Sort events by start time
-        const sortedEvents = data
+        const sortedEvents = events
           .filter(event => event.start_time) // Ensure valid start times
           .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
 
@@ -38,7 +32,7 @@ const DemandResponseEvent = () => {
     }
 
     loadEvents()
-  }, [user])
+  }, [events])
 
   // Function to format event duration
   const getDuration = (start: string, end: string) => {
@@ -99,5 +93,3 @@ const DemandResponseEvent = () => {
     </Card>
   )
 }
-
-export default DemandResponseEvent

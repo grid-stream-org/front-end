@@ -10,32 +10,12 @@ interface ContractData {
   status: string
 }
 
-interface ProcessedContract {
-  id: string
-  projectId: string
-  offloadAmount: number
-  startDate: string
-  endDate: string
-  status: string
-}
-
 interface CurrentContractProps {
   contract: ContractData | null
   isLoading: boolean
 }
 
-const CurrentContract = ({ contract, isLoading }: CurrentContractProps) => {
-  const activeContract: ProcessedContract | null = contract
-    ? {
-        id: contract.id,
-        projectId: contract.project_id,
-        offloadAmount: contract.contract_threshold,
-        startDate: contract.start_date,
-        endDate: contract.end_date,
-        status: contract.status,
-      }
-    : null
-
+export const ContractInfoCard = ({ contract, isLoading }: CurrentContractProps) => {
   return (
     <Card>
       <CardHeader>
@@ -44,13 +24,13 @@ const CurrentContract = ({ contract, isLoading }: CurrentContractProps) => {
       <CardContent>
         {isLoading ? (
           <div className="text-center">Loading contract details...</div>
-        ) : activeContract ? (
+        ) : contract ? (
           <div className="space-y-3">
-            <p>Project ID: {activeContract.projectId}</p>
-            <p>Offload Amount: {activeContract.offloadAmount} kW</p>
-            <p>Start Date: {activeContract.startDate}</p>
-            <p>End Date: {activeContract.endDate}</p>
-            <p>Status: {activeContract.status}</p>
+            <p>Project ID: {contract.project_id}</p>
+            <p>Offload Amount: {contract.contract_threshold} kW</p>
+            <p>Start Date: {contract.start_date}</p>
+            <p>End Date: {contract.end_date}</p>
+            <p>Status: {contract.status}</p>
           </div>
         ) : (
           <div className="text-center">
@@ -61,5 +41,3 @@ const CurrentContract = ({ contract, isLoading }: CurrentContractProps) => {
     </Card>
   )
 }
-
-export default CurrentContract
