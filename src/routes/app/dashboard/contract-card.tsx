@@ -1,41 +1,65 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-const ContractInfoCard = () => {
-  const contract = {
-    projectID: 'DER2G-2025-001',
-    offloadAmount: '50 kW',
-    utilityProvider: 'GridStream Energy',
-    endDate: '2025-12-31',
-    active: true,
-  }
+// Define interfaces
+interface ContractData {
+  id: string
+  project_id: string
+  contract_threshold: number
+  start_date: string
+  end_date: string
+  status: string
+}
+
+interface ProcessedContract {
+  id: string
+  projectId: string
+  offloadAmount: number
+  startDate: string
+  endDate: string
+  status: string
+}
+
+interface CurrentContractProps {
+  contract: ContractData | null
+  isLoading: boolean
+}
+
+const CurrentContract = ({ contract, isLoading }: CurrentContractProps) => {
+  const activeContract: ProcessedContract | null = contract
+    ? {
+        id: contract.id,
+        projectId: contract.project_id,
+        offloadAmount: contract.contract_threshold,
+        startDate: contract.start_date,
+        endDate: contract.end_date,
+        status: contract.status,
+      }
+    : null
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Contract Information</CardTitle>
+        <CardTitle>Current Contract</CardTitle>
       </CardHeader>
       <CardContent>
-        {contract.active ? (
-          <div className="space-y-2">
-            <p>
-              <strong>Project ID:</strong> {contract.projectID}
-            </p>
-            <p>
-              <strong>Offload Amount:</strong> {contract.offloadAmount}
-            </p>
-            <p>
-              <strong>Utility Provider:</strong> {contract.utilityProvider}
-            </p>
-            <p>
-              <strong>End Date:</strong> {contract.endDate}
-            </p>
+        {isLoading ? (
+          <div className="text-center">Loading contract details...</div>
+        ) : activeContract ? (
+          <div className="space-y-3">
+            <p>Project ID: {activeContract.projectId}</p>
+            <p>Offload Amount: {activeContract.offloadAmount} kW</p>
+            <p>Start Date: {activeContract.startDate}</p>
+            <p>End Date: {activeContract.endDate}</p>
+            <p>Status: {activeContract.status}</p>
           </div>
         ) : (
-          <p>No active contract</p>
+          <div className="text-center">
+            <p>No active contract</p>
+          </div>
         )}
       </CardContent>
     </Card>
   )
 }
 
-export default ContractInfoCard
+export default CurrentContract
