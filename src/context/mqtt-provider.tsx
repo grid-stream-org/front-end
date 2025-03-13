@@ -49,6 +49,8 @@ export const MqttProvider = ({ children }: { children: ReactNode }) => {
         clientId,
         rejectUnauthorized: true,
         clean: true,
+        keepalive: 30, // Keep connection alive with ping every 30 seconds
+        reconnectPeriod: 5000, // Attempt to reconnect every 5 seconds
       }
 
       const client: MqttClient = mqtt.connect(brokerUrl, options)
@@ -90,6 +92,14 @@ export const MqttProvider = ({ children }: { children: ReactNode }) => {
         setError(err)
         setIsConnected(false)
       })
+
+      client.on('offline', () => {
+        setIsConnected(false)
+      })
+
+      client.on('reconnect', () => {
+        console.log('Reconnecting to MQTT...')
+      })
     }
 
     const disconnectClient = (): void => {
@@ -114,6 +124,28 @@ export const MqttProvider = ({ children }: { children: ReactNode }) => {
       refs.deviceRegistrar = null
     }
   }, [user, refs])
+
+  // Handle page visibility changes
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      // When the page becomes visible again
+      if (!document.hidden && user && !isConnected) {
+        console.log('Page visible, reconnecting...')
+        // Force reconnection
+        if (refs.client) {
+          refs.client.end(true)
+          refs.client = null
+        }
+        // Wait a bit and let the main effect reconnect
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [user, isConnected, refs])
 
   const updateDevice = async (device: DER, power_capacity: number) => {
     if (power_capacity > device.nameplate_capacity) {

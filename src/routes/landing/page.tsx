@@ -7,6 +7,7 @@ import StaticChart from './static-chart'
 
 import ChartSVG from '@/assets/storyset/env-chart.svg'
 import CarSVG from '@/assets/storyset/turbine.svg'
+import { ThemeToggle } from '@/components'
 import { Logo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
 
@@ -21,9 +22,9 @@ const LandingPage = () => {
   return (
     <div className="flex flex-col w-full dark:bg-gray-900 dark:text-white">
       {/* Navbar */}
-      <nav className="flex justify-between items-center p-6 shadow-md bg-background fixed w-full z-10">
+      <nav className="flex justify-between items-center p-3 shadow-md bg-background fixed w-full z-10">
         <Link to="home" smooth={true} duration={500}>
-          <Logo size="xl" />
+          <Logo size="lg" />
         </Link>
         <div className="flex space-x-6">
           <Button variant="ghost" className="text-muted-foreground dark:text-white">
@@ -39,6 +40,7 @@ const LandingPage = () => {
           <Button variant="default" className="dark:text-white" onClick={() => navigate('/login')}>
             Register/Login
           </Button>
+          <ThemeToggle />
         </div>
       </nav>
 
