@@ -30,7 +30,6 @@ export const MqttProvider = ({ children }: { children: ReactNode }) => {
     isMounted: false,
   }).current
 
-  // Move these functions inside useEffect to avoid the dependency issue
   useEffect(() => {
     const connectClient = async (projectId: string): Promise<void> => {
       if (!refs.deviceRegistrar) {
@@ -38,7 +37,7 @@ export const MqttProvider = ({ children }: { children: ReactNode }) => {
         setDevices(refs.deviceRegistrar.getDevices())
       }
 
-      const clientId = 'clientId-' + Math.random().toString(16)
+      const clientId = 'clientId-' + Math.random().toString(16).substring(2, 8)
       const host = import.meta.env.VITE_MQTT_HOST as string
       const port = import.meta.env.VITE_MQTT_PORT as string
       const brokerUrl = `wss://${host}:${port}/mqtt`
@@ -49,6 +48,9 @@ export const MqttProvider = ({ children }: { children: ReactNode }) => {
         password: import.meta.env.VITE_MQTT_PASSWORD as string,
         clientId,
         rejectUnauthorized: true,
+        clean: true,
+        keepalive: 30, // Keep connection alive with ping every 30 seconds
+        reconnectPeriod: 5000, // Attempt to reconnect every 5 seconds
       }
 
       const client: MqttClient = mqtt.connect(brokerUrl, options)
@@ -79,17 +81,24 @@ export const MqttProvider = ({ children }: { children: ReactNode }) => {
               power_capacity: der.nameplate_capacity,
             }))
 
-            for (const der of ders) {
-              await refs.deviceRegistrar.resolve(der)
-            }
+            Promise.all(ders.map(der => refs.deviceRegistrar?.resolve(der)))
             setDevices(refs.deviceRegistrar.getDevices())
           }
         }
       })
 
       client.on('error', (err: Error) => {
+        console.log(err)
         setError(err)
         setIsConnected(false)
+      })
+
+      client.on('offline', () => {
+        setIsConnected(false)
+      })
+
+      client.on('reconnect', () => {
+        console.log('Reconnecting to MQTT...')
       })
     }
 
@@ -114,7 +123,29 @@ export const MqttProvider = ({ children }: { children: ReactNode }) => {
       disconnectClient()
       refs.deviceRegistrar = null
     }
-  }, [user, refs]) // refs is stable so this won't cause re-renders
+  }, [user, refs])
+
+  // Handle page visibility changes
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      // When the page becomes visible again
+      if (!document.hidden && user && !isConnected) {
+        console.log('Page visible, reconnecting...')
+        // Force reconnection
+        if (refs.client) {
+          refs.client.end(true)
+          refs.client = null
+        }
+        // Wait a bit and let the main effect reconnect
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [user, isConnected, refs])
 
   const updateDevice = async (device: DER, power_capacity: number) => {
     if (power_capacity > device.nameplate_capacity) {
