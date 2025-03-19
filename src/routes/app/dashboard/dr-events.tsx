@@ -65,7 +65,7 @@ export const DemandResponseEvent = ({ events }: { events: DREvent[] }) => {
         {nextEvent ? (
           <div className="w-full text-center p-4 rounded-xl border">
             <h3 className="font-semibold text-lg mb-2">Next Event</h3>
-            <div className="bg-green-100 dark:bg-green-900/40 rounded-xl p-2 mb-2 inline-block">
+            <div className="bg-green-300 dark:bg-green-600 rounded-xl p-2 mb-2 inline-block">
               {formatDate(nextEvent.start_time)}
             </div>
             <div className="text-sm text-muted-foreground mt-1">
@@ -79,7 +79,7 @@ export const DemandResponseEvent = ({ events }: { events: DREvent[] }) => {
         {lastEvent ? (
           <div className="w-full text-center p-4 rounded-xl border">
             <h3 className="font-semibold text-lg mb-2">Last Event</h3>
-            <div className="bg-blue-100 dark:bg-blue-900/40 rounded-xl p-2 mb-2 inline-block">
+            <div className="bg-blue-300 dark:bg-blue-600 rounded-xl p-2 mb-2 inline-block">
               {formatDate(lastEvent.start_time)}
             </div>
             <div className="text-sm text-muted-foreground mt-1">

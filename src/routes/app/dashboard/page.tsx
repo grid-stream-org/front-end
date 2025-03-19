@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import { ContractInfoCard } from './contract-card'
 import { CalendarCard } from './dr-calendar'
 import { DemandResponseEvent } from './dr-events'
-import OffloadHistoryChart from './reduction-history'
+import { OffloadHistoryChart } from './reduction-history'
 
 import { PageTitle } from '@/components'
 import { getAppRoute } from '@/config'
@@ -30,7 +30,6 @@ const DashboardPage = () => {
   const [contracts, setContracts] = useState<ContractData[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [events, setEvents] = useState<DREvent[]>([])
-  // const [error, setError] = useState<string | null>(null)
 
   const loadContracts = useCallback(async (): Promise<void> => {
     if (!user) return
@@ -49,7 +48,6 @@ const DashboardPage = () => {
     if (!user) return
     setIsLoading(true)
     try {
-      // Use fetchEvents instead of useEvents
       const eventsData = await fetchEvents(user)
       setEvents(eventsData)
     } catch (err) {
@@ -61,7 +59,7 @@ const DashboardPage = () => {
 
   useEffect(() => {
     loadContracts()
-    loadEvents() // Call loadEvents in the useEffect
+    loadEvents()
   }, [loadContracts, loadEvents])
 
   // Find active contract
@@ -82,7 +80,7 @@ const DashboardPage = () => {
         <DemandResponseEvent events={events} />
         <CalendarCard events={events} />
         <div className="col-span-1 md:col-span-2">
-          <OffloadHistoryChart />
+          <OffloadHistoryChart events={events} />
         </div>
       </div>
     </>

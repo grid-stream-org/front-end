@@ -28,3 +28,10 @@ export type Contract = {
   status: string
   project_id: string
 }
+
+export type ProjectAverage = {
+  time: string
+  baseline: number
+  average_output: number
+  threshold: number
+}
