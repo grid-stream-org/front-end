@@ -1,37 +1,46 @@
-import { getAuth } from 'firebase/auth'
-import { getFirestore, collection, query, where, onSnapshot } from 'firebase/firestore'
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  onSnapshot,
+  limit,
+  orderBy,
+} from 'firebase/firestore'
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 import { useAuth } from '@/context'
 import { Notification } from '@/types'
 
 export const useNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([])
-  const auth = getAuth()
   const db = getFirestore()
   const { user } = useAuth()
 
   useEffect(() => {
-    const currentUser = auth.currentUser
-    if (!currentUser) return
-
+    if (!user) return
     const q = query(
       collection(db, 'notifications'),
-      where('project_id', '==', user?.projectId), // Use project_id instead of uid
+      where('project_id', '==', user?.projectId),
+      orderBy('start_time', 'desc'),
+      limit(10),
     )
-    console.log(currentUser.uid)
-
-    const unsubscribe = onSnapshot(q, snapshot => {
-      const newNotifs: Notification[] = snapshot.docs.map(doc => {
-        const data = doc.data() as Omit<Notification, 'id'> // Exclude 'id' to prevent duplicate
-        return { id: doc.id, ...data } // Ensure 'id' is only added once
+    try {
+      const unsubscribe = onSnapshot(q, snapshot => {
+        const newNotifs: Notification[] = snapshot.docs.map(doc => {
+          const data = doc.data() as Omit<Notification, 'id'>
+          return { id: doc.id, ...data }
+        })
+        setNotifications(newNotifs)
       })
 
-      setNotifications(newNotifs)
-    })
-
-    return () => unsubscribe()
-  }, [auth.currentUser, db, user?.projectId])
+      return () => unsubscribe()
+    } catch (error) {
+      toast.error('Failed to fetch notifications')
+      console.error(error)
+    }
+  }, [db, user])
 
   return notifications
 }

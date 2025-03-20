@@ -5,12 +5,8 @@ export const useMarkNotification = () => {
   const db = getFirestore()
 
   const markNotificationAsRead = async (notificationId: string) => {
-    try {
-      const notifRef = doc(db, 'notifications', notificationId)
-      await updateDoc(notifRef, { read: true })
-    } catch (error) {
-      console.error('Error marking notification as read:', error)
-    }
+    const notifRef = doc(db, 'notifications', notificationId)
+    await updateDoc(notifRef, { read: true })
   }
 
   return { markNotificationAsRead }

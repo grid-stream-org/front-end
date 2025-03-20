@@ -1,5 +1,6 @@
 import { Bell } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 import { NotificationModal } from '@/components'
 import {
@@ -20,9 +21,14 @@ export const NotificationBell = () => {
 
   const handleNotificationClick = (notification: Notification) => {
     setSelectedNotification(notification)
-    if (!notification.read) {
-      console.log(notification.id)
-      markNotificationAsRead(notification.id)
+    try {
+      if (!notification.read) {
+        console.log(notification.id)
+        markNotificationAsRead(notification.id)
+      }
+    } catch (error) {
+      toast.error('error loading notifications')
+      console.error(error)
     }
   }
 
