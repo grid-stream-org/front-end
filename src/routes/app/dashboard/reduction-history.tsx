@@ -1,14 +1,5 @@
-import { useEffect, useState } from 'react'
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts'
+import { useEffect, useState, useRef } from 'react'
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -27,81 +18,90 @@ export const OffloadHistoryChart = ({ events }: { events: DREvent[] }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [lastEvent, setLastEvent] = useState<DREvent | null>(null)
+  const isLoadingRef = useRef(false)
 
   useEffect(() => {
-    if (!events || events.length === 0) return
+    if (isLoadingRef.current) return
 
-    const sortedEvents = events
-      .filter(event => event.start_time)
-      .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
-
-    const now = Date.now()
-    const pastEvents = sortedEvents.filter(event => new Date(event.end_time).getTime() < now)
-
-    if (pastEvents.length) {
-      console.log('Last event found:', pastEvents[pastEvents.length - 1])
-    } else {
-      console.log('No past events found')
-    }
-
-    setLastEvent(pastEvents.length ? pastEvents[pastEvents.length - 1] : null)
-  }, [events])
-
-  useEffect(() => {
-    const loadOffloadData = async () => {
-      if (!lastEvent || !user) {
-        if (!lastEvent) setError('No completed events found')
-        return
-      }
-
-      if (!lastEvent.start_time || !lastEvent.end_time) {
-        setError('Event is missing start or end time')
-        return
-      }
+    const loadData = async () => {
+      if (isLoadingRef.current) return
+      isLoadingRef.current = true
 
       setIsLoading(true)
       setError(null)
 
       try {
-        console.log('Loading data for event:', {
-          start: lastEvent.start_time,
-          end: lastEvent.end_time,
-        })
-
-        const offloadData = await fetchProjectAverages(
-          user,
-          lastEvent.start_time,
-          lastEvent.end_time,
-        )
-
-        if (offloadData.length === 0) {
-          console.log('No data returned from API')
-          setError('No data available for the selected time period')
-          setChartData([])
+        if (!events?.length || !user) {
+          setError(!events?.length ? 'No events found' : 'User not authenticated')
           return
         }
 
-        console.log('Data received:', offloadData)
+        const validEvents = events.filter(event => event?.start_time && event?.end_time)
+        if (!validEvents.length) {
+          setError('No valid events found')
+          return
+        }
 
-        const formattedData = offloadData.map(item => ({
-          time: new Date(item.start_time).toLocaleTimeString(),
-          baseline: item.baseline,
-          average_output: item.average_output,
-          threshold: item.contract_threshold,
-        }))
+        // Sort events
+        const sortedEvents = [...validEvents].sort((a, b) => {
+          return new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+        })
+
+        const now = Date.now()
+        const pastEvents = sortedEvents.filter(event => {
+          return new Date(event.end_time).getTime() < now
+        })
+
+        if (!pastEvents.length) {
+          setError('No completed events found')
+          return
+        }
+
+        const latestEvent = pastEvents[pastEvents.length - 1]
+        const offloadData = await fetchProjectAverages(
+          user,
+          latestEvent.start_time,
+          latestEvent.end_time,
+        )
+
+        if (!offloadData?.length) {
+          setError('No data available for the selected time period')
+          return
+        }
+
+        // Format data for the chart
+        const formattedData = offloadData
+          .filter(item => item?.start_time)
+          .map(item => {
+            const baseline = typeof item.baseline === 'number' ? item.baseline : 0
+            const threshold =
+              typeof item.contract_threshold === 'number' ? item.contract_threshold : 0
+
+            return {
+              time: new Date(item.start_time).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              }),
+              baseline: baseline,
+              average_output: typeof item.average_output === 'number' ? item.average_output : 0,
+              threshold: baseline - threshold,
+            }
+          })
 
         setChartData(formattedData)
-      } catch (err) {
+        setLastEvent(latestEvent)
+      } catch (err: unknown) {
         console.error('Error loading offload data:', err)
-        setError('Failed to load chart data')
       } finally {
         setIsLoading(false)
+        isLoadingRef.current = false
       }
     }
 
-    loadOffloadData()
-  }, [lastEvent, user])
+    loadData()
+  }, [events, user])
 
+  // Chart configuration
   const chartConfig = {
     baseline: {
       label: 'Baseline',
@@ -112,35 +112,43 @@ export const OffloadHistoryChart = ({ events }: { events: DREvent[] }) => {
       color: 'hsl(var(--chart-2))',
     },
     threshold: {
-      label: 'Threshold',
+      label: 'Baseline-Threshold',
       color: 'hsl(var(--destructive))',
     },
   } satisfies ChartConfig
 
   const getEventTimeRange = () => {
-    if (!lastEvent) return 'No completed events available'
-
-    const startDate = new Date(lastEvent.start_time)
-    const endDate = new Date(lastEvent.end_time)
-
-    const formatDate = (date: Date) => {
-      return (
-        date.toLocaleDateString() +
-        ' ' +
-        date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      )
+    if (!lastEvent?.start_time || !lastEvent?.end_time) {
+      return 'No completed events available'
     }
 
-    return `${formatDate(startDate)} - ${formatDate(endDate)} (Local Time)`
+    try {
+      const startDate = new Date(lastEvent.start_time)
+      const endDate = new Date(lastEvent.end_time)
+
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        return 'Invalid event dates'
+      }
+
+      const formatDate = (date: Date) => {
+        return (
+          date.toLocaleDateString() +
+          ' ' +
+          date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        )
+      }
+
+      return `${formatDate(startDate)} - ${formatDate(endDate)}`
+    } catch (err) {
+      console.error('Error loading offload data:', err)
+    }
   }
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle>Previous Event Offload History</CardTitle>
-          <CardDescription>{isLoading ? 'Loading...' : getEventTimeRange()}</CardDescription>
-        </div>
+      <CardHeader>
+        <CardTitle>Previous Event Offload History</CardTitle>
+        <CardDescription>{isLoading ? 'Loading...' : getEventTimeRange()}</CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -153,37 +161,44 @@ export const OffloadHistoryChart = ({ events }: { events: DREvent[] }) => {
           </div>
         ) : chartData.length > 0 ? (
           <ChartContainer config={chartConfig}>
-            <ResponsiveContainer width="100%" height={350}>
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" />
-                <YAxis />
-                <Tooltip content={<ChartTooltip content={<ChartTooltipContent />} />} />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="baseline"
-                  stroke={chartConfig.baseline.color}
-                  name={chartConfig.baseline.label}
-                  strokeWidth={2}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="average_output"
-                  stroke={chartConfig.average_output.color}
-                  name={chartConfig.average_output.label}
-                  strokeWidth={2}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="threshold"
-                  stroke={chartConfig.threshold.color}
-                  name={chartConfig.threshold.label}
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <LineChart
+              accessibilityLayer
+              data={chartData}
+              height={350}
+              margin={{
+                left: 24,
+                right: 24,
+                top: 24,
+                bottom: 24,
+              }}
+            >
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis dataKey="time" tickLine={true} axisLine={false} tickMargin={8} />
+              <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+              <Line
+                dataKey="baseline"
+                type="monotone"
+                stroke="var(--color-baseline)"
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line
+                dataKey="average_output"
+                type="monotone"
+                stroke="var(--color-average_output)"
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line
+                dataKey="threshold"
+                type="monotone"
+                stroke="var(--color-threshold)"
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                dot={false}
+              />
+            </LineChart>
           </ChartContainer>
         ) : (
           <div className="flex h-[350px] items-center justify-center">
