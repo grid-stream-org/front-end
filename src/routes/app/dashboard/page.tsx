@@ -9,8 +9,8 @@ import { OffloadHistoryChart } from './reduction-history'
 import { PageTitle } from '@/components'
 import { getAppRoute } from '@/config'
 import { useAuth } from '@/context'
-import { useMqttData } from '@/context'
-import { fetchEvents, fetchContracts } from '@/hooks' // Changed from useEvents to fetchEvents
+import { useMqttData } from '@/context/mqtt'
+import { fetchEvents, fetchContracts } from '@/hooks'
 import { DeviceTable } from '@/routes/app/devices/device-table'
 import { DREvent } from '@/types'
 
