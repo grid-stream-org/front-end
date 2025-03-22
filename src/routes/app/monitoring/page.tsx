@@ -9,7 +9,7 @@ import { SummaryStats } from './summary-stats'
 
 import { PageTitle } from '@/components'
 import { getAppRoute } from '@/config'
-import { useMqttData } from '@/context'
+import { useMqttData } from '@/context/mqtt'
 import { useMeterData } from '@/hooks'
 import { useMeterStore } from '@/state'
 

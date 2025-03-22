@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { useMqttData } from '@/context'
+import { useMqttData } from '@/context/mqtt'
 import { useMeterStore } from '@/state'
 import { DERData } from '@/types'
 
