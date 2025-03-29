@@ -71,7 +71,6 @@ const EventsPage = () => {
     <div>
       <PageTitle route={getAppRoute(location.pathname)} />
       <SummaryCards items={summaryItems} />
-
       <Tabs defaultValue="upcoming" className="w-full">
         <TabsList className="w-full mb-4 sm:mb-6">
           <TabsTrigger value="upcoming" className="flex-1">

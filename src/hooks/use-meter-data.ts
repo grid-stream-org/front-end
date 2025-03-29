@@ -1,61 +1,31 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 
-import { useMqttData } from '@/context'
+import { useMqttData } from '@/context/mqtt'
 import { useMeterStore } from '@/state'
 import { DERData } from '@/types'
-
-const INTERVAL = 10000
 
 export const useMeterData = () => {
   const { data } = useMqttData()
   const { addDataPoint, cleanOldData } = useMeterStore()
-  const lastDataRef = useRef<DERData[] | null>(null)
 
+  // Process MQTT data immediately when it arrives
   useEffect(() => {
     if (!data?.length) return
-    lastDataRef.current = data
-  }, [data])
 
-  useEffect(() => {
-    const addPoint = () => {
-      const currentData = lastDataRef.current
+    const totalOutput = data.reduce((sum: number, der: DERData) => sum + der.current_output, 0)
+    const baseline = data[0].baseline
+    const consumption = data[0].power_meter_measurement - totalOutput
 
-      if (currentData?.length) {
-        const totalOutput = currentData.reduce(
-          (sum: number, der: DERData) => sum + der.current_output,
-          0,
-        )
-        const baseline = currentData[0].baseline
-        const consumption = currentData[0].power_meter_measurement - totalOutput
-        addDataPoint({
-          date: new Date(currentData[0].timestamp).getTime(),
-          baseline,
-          // TODO we need to figure out this math
-          load: currentData[0].power_meter_measurement,
-          consumption,
-          contract: currentData[0].contract_threshold,
-          reduction: baseline - consumption,
-          ders: currentData,
-        })
-      } else {
-        addDataPoint({
-          date: Date.now(),
-          baseline: null,
-          load: null,
-          consumption: null,
-          contract: null,
-          reduction: null,
-          ders: null,
-        })
-      }
-
-      // Clear the last data so we don't reuse it
-      lastDataRef.current = null
-    }
-
-    const intervalId = setInterval(addPoint, INTERVAL)
-    return () => clearInterval(intervalId)
-  }, [addDataPoint])
+    addDataPoint({
+      date: new Date(data[0].timestamp).getTime(),
+      baseline,
+      load: data[0].power_meter_measurement,
+      consumption,
+      contract: data[0].contract_threshold,
+      reduction: baseline - consumption,
+      ders: data,
+    })
+  }, [data, addDataPoint])
 
   // Clean up old data every 5 minutes
   useEffect(() => {

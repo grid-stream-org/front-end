@@ -13,7 +13,6 @@ export const useMeterStore = create<MeterState>()(
         const updated = [...get().data, { ...point, date: point.date }].sort(
           (a, b) => a.date - b.date,
         )
-
         // Keep only points within the last hour
         const cutoff = Date.now() - ONE_HOUR
         set({ data: updated.filter(p => p.date > cutoff) })
