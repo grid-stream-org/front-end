@@ -14,6 +14,7 @@ import {
   Project,
   ProjectIdFormValues,
   ResetPasswordFormValues,
+  UserRole,
   loginSchema,
   projectIdSchema,
   resetPasswordSchema,
@@ -22,7 +23,7 @@ import {
 const FORM_STATE_KEY = 'auth:loginFormState'
 
 const LoginPage = () => {
-  const { loginWithGoogle, login, createUserDocument, resetPassword, loading } = useAuth()
+  const { loginWithGoogle, login, createUserDocument, resetPassword, loading, user } = useAuth()
   const navigate = useNavigate()
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
 
@@ -58,6 +59,19 @@ const LoginPage = () => {
     return () => sessionStorage.removeItem(FORM_STATE_KEY)
   }, [formState])
 
+  const navigateBasedOnRole = (role: UserRole) => {
+    switch (role) {
+      case UserRole.RESIDENTIAL:
+        navigate('/app/dashboard')
+        break
+      case UserRole.UTILITY:
+        navigate('/app/utility/dashboard')
+        break
+      default:
+        navigate('/login')
+    }
+  }
+
   const resetFormState = () => {
     setFormState({
       isProjectIdStep: false,
@@ -73,17 +87,21 @@ const LoginPage = () => {
   const handleLoginWithGoogle = async () => {
     try {
       setIsGoogleLoading(true)
-      const { exists, user } = await loginWithGoogle()
-      if (!exists) {
+      const response = await loginWithGoogle()
+      if (!response.exists) {
         setFormState(prev => ({
           ...prev,
           isProjectIdStep: true,
-          pendingUser: user!,
+          pendingUser: response.user!,
         }))
         return
       }
       resetFormState()
-      navigate('/app/dashboard')
+      if (user) {
+        navigateBasedOnRole(user.role)
+      } else {
+        navigate('/login')
+      }
     } catch (error) {
       loginForm.setError('root', {
         message: handleError(error),
@@ -136,7 +154,11 @@ const LoginPage = () => {
       await associateUserWithProject(values.projectId, currentUser.uid, token)
 
       resetFormState()
-      navigate('/app/dashboard')
+      if (user) {
+        navigateBasedOnRole(user.role)
+      } else {
+        navigate('/login')
+      }
     } catch (error) {
       await cleanupUser(currentUser)
       projectIdForm.setError('root', {
@@ -192,7 +214,12 @@ const LoginPage = () => {
     try {
       await login(values.email, values.password)
       resetFormState()
-      navigate('/app/dashboard')
+
+      if (user) {
+        navigateBasedOnRole(user.role)
+      } else {
+        navigate('/login')
+      }
     } catch (error) {
       loginForm.setError('root', {
         message: handleError(error),

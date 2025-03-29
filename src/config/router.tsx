@@ -8,6 +8,7 @@ import {
   protectedRoutes,
   createRouteConfig,
   hiddenProtectedRoutes,
+  utilityRoutes,
 } from '@/config/routes'
 
 export const router = createBrowserRouter([
@@ -29,6 +30,7 @@ export const router = createBrowserRouter([
             children: [
               ...protectedRoutes.map(createRouteConfig),
               ...hiddenProtectedRoutes.map(createRouteConfig),
+              ...utilityRoutes.map(createRouteConfig),
             ],
           },
         ],

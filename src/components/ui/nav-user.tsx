@@ -20,6 +20,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 import { useAuth } from '@/context'
+import { UserRole } from '@/types'
 
 export const NavUser = ({
   user,
@@ -29,6 +30,7 @@ export const NavUser = ({
     email: string
     avatar: string
     projectId: string
+    role: UserRole
   }
 }) => {
   const { isMobile } = useSidebar()
@@ -86,7 +88,10 @@ export const NavUser = ({
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="font-semibold">{user.name}</span>
                   <span className="text-xs">Email: {user.email}</span>
-                  <span className="text-xs">Project ID: {user.projectId}</span>
+                  <span className="text-xs">
+                    {user.role === UserRole.UTILITY ? 'Utility ID: ' : 'Project ID: '}
+                    {user.projectId}
+                  </span>
                 </div>
               </div>
             </DropdownMenuLabel>
