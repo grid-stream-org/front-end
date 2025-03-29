@@ -5,7 +5,7 @@ import { SummaryCards } from './summary-cards'
 
 import { PageTitle } from '@/components'
 import { getAppRoute } from '@/config'
-import { useMqttData } from '@/context'
+import { useMqttData } from '@/context/mqtt'
 
 const DevicesPage = () => {
   const location = useLocation()
