@@ -56,6 +56,7 @@ export const AppSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => {
             email: user!.email!,
             avatar: user!.photoURL!,
             projectId: user!.projectId,
+            role: user!.role,
           }}
         />
       </SidebarFooter>
