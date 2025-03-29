@@ -3,7 +3,13 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { LoadingScreen } from '@/components'
 import { useAuth } from '@/context'
 import { MqttProvider } from '@/context/mqtt'
+import { useMeterData } from '@/hooks'
 import { UserRole } from '@/types'
+
+const ReadMqttData = () => {
+  useMeterData()
+  return null
+}
 
 export const Protected = () => {
   const { user, loading } = useAuth()
@@ -27,6 +33,7 @@ export const Protected = () => {
 
   return (
     <MqttProvider>
+      <ReadMqttData />
       <Outlet />
     </MqttProvider>
   )
