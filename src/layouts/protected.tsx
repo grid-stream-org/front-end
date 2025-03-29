@@ -1,7 +1,8 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { LoadingScreen } from '@/components'
-import { MqttProvider, useAuth } from '@/context'
+import { useAuth } from '@/context'
+import { MqttProvider } from '@/context/mqtt'
 import { UserRole } from '@/types'
 
 export const Protected = () => {
