@@ -29,20 +29,12 @@ export const EventCard = ({ event }: EventCardProps) => {
         }`}
       />
 
-      <CardContent className="pt-6 px-6 pb-5">
+      <CardContent className="pt-6 px-4 sm:px-6 pb-5">
         {/* Header with Status */}
-        <div className="flex justify-between items-start mb-5">
-          <div>
-            <h3 className="text-lg font-semibold mb-1 text-foreground">Event {event.id}</h3>
-            <div className="flex items-center text-sm text-muted-foreground gap-1">
-              <CircuitBoard className="h-4 w-4 text-primary" />
-              <span>Utility: {event.utility_id}</span>
-            </div>
-          </div>
-
+        <div className="flex flex-col gap-2 mb-5">
           {/* Status Badge */}
           <span
-            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium gap-1 ${
+            className={`self-start inline-flex items-center px-3 py-1 rounded-full text-xs font-medium gap-1 ${
               isActive
                 ? 'bg-green-100 text-green-700'
                 : isPast
@@ -67,10 +59,20 @@ export const EventCard = ({ event }: EventCardProps) => {
               </>
             )}
           </span>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-1 text-foreground break-all">
+              Event {event.id}
+            </h3>
+            <div className="flex items-center text-sm text-muted-foreground gap-1 break-all">
+              <CircuitBoard className="h-4 w-4 text-primary" />
+              <span>Utility: {event.utility_id}</span>
+            </div>
+          </div>
         </div>
 
         {/* Event Times */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
               <CalendarClock className="h-4 w-4 text-primary" />

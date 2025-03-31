@@ -72,14 +72,14 @@ const EventsPage = () => {
       <PageTitle route={getAppRoute(location.pathname)} />
       <SummaryCards items={summaryItems} />
       <Tabs defaultValue="upcoming" className="w-full">
-        <TabsList className="w-full mb-4 sm:mb-6">
-          <TabsTrigger value="upcoming" className="flex-1">
+        <TabsList className="w-full mb-4 sm:mb-6 flex overflow-x-auto no-scrollbar gap-1">
+          <TabsTrigger value="upcoming" className="flex-1 min-w-[8rem] whitespace-nowrap">
             Upcoming Events
           </TabsTrigger>
-          <TabsTrigger value="active" className="flex-1">
+          <TabsTrigger value="active" className="flex-1 min-w-[8rem] whitespace-nowrap">
             Active Events
           </TabsTrigger>
-          <TabsTrigger value="past" className="flex-1">
+          <TabsTrigger value="past" className="flex-1 min-w-[8rem] whitespace-nowrap">
             Past Events
           </TabsTrigger>
         </TabsList>
