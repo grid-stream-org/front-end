@@ -35,3 +35,15 @@ export type ProjectAverage = {
   average_output: number
   threshold: number
 }
+
+export type ProjectSummary = {
+  total_active: number
+  total_pending: number
+  total_threshold: number
+  next_event_id: string
+  next_event_start: string
+  next_event_end: string
+  recent_event_id: string
+  recent_event_start: string
+  recent_event_end: string
+}
