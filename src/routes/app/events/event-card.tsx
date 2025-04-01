@@ -19,9 +19,7 @@ export const EventCard = ({ event }: EventCardProps) => {
   const isPast = end < now
 
   return (
-    <Card
-      className={`relative rounded-xl shadow-md mb-6 transition-all duration-300 hover:-translate-y-1`}
-    >
+    <Card className={`relative rounded-xl mb-6`}>
       {/* top accent bar */}
       <div
         className={`absolute inset-x-0 top-0 h-1 rounded-t-xl ${
@@ -61,12 +59,10 @@ export const EventCard = ({ event }: EventCardProps) => {
           </span>
 
           <div>
-            <h3 className="text-lg font-semibold mb-1 text-foreground break-all">
-              Event {event.id}
-            </h3>
+            <h3 className="text-lg font-semibold mb-1 text-foreground break-all">Event</h3>
             <div className="flex items-center text-sm text-muted-foreground gap-1 break-all">
               <CircuitBoard className="h-4 w-4 text-primary" />
-              <span>Utility: {event.utility_id}</span>
+              <span>Utility: {event.utility_name}</span>
             </div>
           </div>
         </div>

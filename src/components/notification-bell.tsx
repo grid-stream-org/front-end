@@ -1,3 +1,4 @@
+import { Timestamp } from '@firebase/firestore'
 import { Bell } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -32,6 +33,18 @@ export const NotificationBell = () => {
     }
   }
 
+  const formatTime = (timestamp: Timestamp) => {
+    if (!timestamp) return null
+
+    const date = new Date(timestamp.seconds * 1000)
+    return date.toLocaleString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    })
+  }
+
   return (
     <>
       <DropdownMenu>
@@ -46,7 +59,6 @@ export const NotificationBell = () => {
             <span className="sr-only">Notifications</span>
           </Button>
         </DropdownMenuTrigger>
-
         <DropdownMenuContent
           align="end"
           className="bg-popover text-popover-foreground border border-border shadow-lg"
@@ -66,19 +78,16 @@ export const NotificationBell = () => {
               >
                 <span className="font-medium">{n.message}</span>
                 <small className="text-muted-foreground">
-                  {n.start_time
-                    ? new Date(n.start_time.seconds * 1000).toLocaleString() + ' - '
-                    : 'No start time'}
-                  {n.end_time
-                    ? new Date(n.end_time.seconds * 1000).toLocaleString()
-                    : 'No end time'}
+                  {formatTime(n.start_time)
+                    ? `${formatTime(n.start_time)}${n.end_time ? ' - ' : ''}`
+                    : 'No start time - '}
+                  {formatTime(n.end_time) || 'No end time'}
                 </small>
               </DropdownMenuItem>
             ))
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-
       <NotificationModal
         notification={selectedNotification}
         onClose={() => setSelectedNotification(null)}

@@ -1,10 +1,14 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 
+import { MeterChart } from '../monitoring/meter-chart'
+
 import { ContractInfoCard } from './contract-card'
 import { CalendarCard } from './dr-calendar'
 import { DemandResponseEvent } from './dr-events'
+import { PowerConsumptionGauge } from './power-gauge'
 import { OffloadHistoryChart } from './reduction-history'
+import { FinancialImpactCard } from './test'
 
 import { PageTitle } from '@/components'
 import { getAppRoute } from '@/config'
@@ -12,6 +16,7 @@ import { useAuth } from '@/context'
 import { useMqttData } from '@/context/mqtt'
 import { fetchEvents, fetchContracts } from '@/hooks'
 import { DeviceTable } from '@/routes/app/devices/device-table'
+import { useMeterStore } from '@/state'
 import { DREvent } from '@/types'
 
 // Define interfaces
@@ -48,7 +53,7 @@ const DashboardPage = () => {
     if (!user) return
     setIsLoading(true)
     try {
-      const eventsData = await fetchEvents(user)
+      const eventsData = await fetchEvents(user, 'Residential')
       setEvents(eventsData)
     } catch (err) {
       console.error('Failed to load events', err)
@@ -65,21 +70,32 @@ const DashboardPage = () => {
   // Find active contract
   const activeContract = contracts.find(contract => contract.status === 'active') || null
   const { isConnected, devices, error, updateDevice } = useMqttData()
+  const { data } = useMeterStore()
 
   return (
     <>
       <PageTitle route={getAppRoute(location.pathname)} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <PowerConsumptionGauge data={data} isConnected error={error} />
+
+        <FinancialImpactCard data={data} events={events} />
+        <div className="col-span-1 lg:col-span-2">
+          <DemandResponseEvent events={events} />
+        </div>
         <ContractInfoCard contract={activeContract} isLoading={isLoading} />
+
+        <MeterChart isConnected error={error} data={data} />
+
         <DeviceTable
           devices={devices}
           isConnected={isConnected}
           error={error}
           onUpdatePowerCapacity={updateDevice}
         />
-        <DemandResponseEvent events={events} />
+
         <CalendarCard events={events} />
-        <div className="col-span-1 md:col-span-2">
+        <div className="col-span-1 lg:col-span-2">
           <OffloadHistoryChart events={events} />
         </div>
       </div>

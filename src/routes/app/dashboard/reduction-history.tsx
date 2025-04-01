@@ -1,13 +1,17 @@
+import { FileBarChart } from 'lucide-react'
 import { useEffect, useState, useRef } from 'react'
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context'
 import { fetchProjectAverages } from '@/hooks/use-project-averages'
 import { DREvent, ProjectAverage } from '@/types'
@@ -112,8 +116,8 @@ export const OffloadHistoryChart = ({ events }: { events: DREvent[] }) => {
       color: 'hsl(var(--chart-2))',
     },
     threshold: {
-      label: 'Baseline-Threshold',
-      color: 'hsl(var(--destructive))',
+      label: 'Baseline - Threshold',
+      color: 'hsl(var(--chart-3))',
     },
   } satisfies ChartConfig
 
@@ -132,8 +136,11 @@ export const OffloadHistoryChart = ({ events }: { events: DREvent[] }) => {
 
       const formatDate = (date: Date) => {
         return (
-          date.toLocaleDateString() +
-          ' ' +
+          date.toLocaleDateString(undefined, {
+            month: 'short',
+            day: 'numeric',
+          }) +
+          ', ' +
           date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         )
       }
@@ -141,68 +148,94 @@ export const OffloadHistoryChart = ({ events }: { events: DREvent[] }) => {
       return `${formatDate(startDate)} - ${formatDate(endDate)}`
     } catch (err) {
       console.error('Error loading offload data:', err)
+      return 'Error processing event dates'
     }
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Previous Event Offload History</CardTitle>
-        <CardDescription>{isLoading ? 'Loading...' : getEventTimeRange()}</CardDescription>
+    <Card className="h-full">
+      <CardHeader className="flex items-center justify-between gap-2 border-b py-5 sm:flex-row">
+        <div className="flex flex-col gap-1">
+          <CardTitle>Previous Event Offload History</CardTitle>
+          <CardDescription>{isLoading ? 'Loading...' : getEventTimeRange()}</CardDescription>
+        </div>
+        <FileBarChart className="h-5 w-5 text-muted-foreground" />
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="flex h-[350px] items-center justify-center">
-            <span>Loading chart data...</span>
+          <div className="py-4">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+              <Skeleton className="h-[300px] w-full" />
+              <div className="flex justify-between items-center">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+            </div>
           </div>
         ) : error ? (
-          <div className="flex h-[350px] items-center justify-center text-center text-muted-foreground">
+          <div className="flex items-center justify-center py-12 text-center text-muted-foreground">
             {error}
           </div>
         ) : chartData.length > 0 ? (
           <ChartContainer config={chartConfig}>
-            <LineChart
-              accessibilityLayer
-              data={chartData}
-              height={350}
-              margin={{
-                left: 24,
-                right: 24,
-                top: 24,
-                bottom: 24,
-              }}
-            >
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis dataKey="time" tickLine={true} axisLine={false} tickMargin={8} />
-              <YAxis tickLine={false} axisLine={false} tickMargin={8} />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-              <Line
-                dataKey="baseline"
-                type="monotone"
-                stroke="var(--color-baseline)"
-                strokeWidth={2}
-                dot={false}
-              />
-              <Line
-                dataKey="average_output"
-                type="monotone"
-                stroke="var(--color-average_output)"
-                strokeWidth={2}
-                dot={false}
-              />
-              <Line
-                dataKey="threshold"
-                type="monotone"
-                stroke="var(--color-threshold)"
-                strokeWidth={2}
-                strokeDasharray="5 5"
-                dot={false}
-              />
-            </LineChart>
+            <ResponsiveContainer width="100%">
+              <LineChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  top: 24,
+                }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="time" tickLine={false} axisLine={false} minTickGap={32} />
+                <YAxis
+                  tickFormatter={(val: number) => `${val.toFixed(0)} kW`}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                <Line
+                  name="Baseline"
+                  dataKey="baseline"
+                  type="monotone"
+                  stroke="var(--color-baseline)"
+                  strokeWidth={2}
+                  dot={false}
+                />
+                <Line
+                  name="Average Output"
+                  dataKey="average_output"
+                  type="monotone"
+                  stroke="var(--color-average_output)"
+                  strokeWidth={2}
+                  dot={false}
+                />
+                <Line
+                  name="Baseline-Threshold"
+                  dataKey="threshold"
+                  type="monotone"
+                  stroke="var(--color-threshold)"
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  dot={false}
+                />
+                <ChartLegend content={<ChartLegendContent />} />
+              </LineChart>
+            </ResponsiveContainer>
           </ChartContainer>
         ) : (
-          <div className="flex h-[350px] items-center justify-center">
-            No data available for the selected time period
+          <div className="flex items-center justify-center py-12 text-center">
+            <span className="text-muted-foreground">
+              No data available for the selected time period
+            </span>
           </div>
         )}
       </CardContent>

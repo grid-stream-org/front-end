@@ -14,12 +14,12 @@ export const Logo = ({ className, showText = true, size = 'md', ...props }: Logo
     sm: {
       icon: 'h-6 w-6',
       text: 'text-md',
-      gap: 'gap-1.5',
+      gap: 'gap-1',
     },
     md: {
       icon: 'h-8 w-8',
-      text: 'text-xl',
-      gap: 'gap-2',
+      text: 'text-md',
+      gap: 'gap-1',
     },
     lg: {
       icon: 'h-10 w-10',
@@ -51,7 +51,7 @@ export const Logo = ({ className, showText = true, size = 'md', ...props }: Logo
       <Image src={Icon} alt="GridStream" className={sizeClasses[size].icon} />
       {showText && (
         <span className={cn('font-semibold text-primary font-montserrat', sizeClasses[size].text)}>
-          GridStream
+          GRIDSTREAM
         </span>
       )}
     </div>
