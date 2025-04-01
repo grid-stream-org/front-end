@@ -110,13 +110,13 @@ const utilityRoutes: AppRoute[] = [
   //   description: 'Monitor real-time power flow and device performance across your residence',
   //   component: () => import('@/routes/app/monitoring'),
   // },
-  // {
-  //   title: 'Events',
-  //   path: 'events',
-  //   icon: Calendar,
-  //   description: 'Track prior, current, and future demand response events',
-  //   component: () => import('@/routes/app/events'),
-  // },
+  {
+    title: 'Events',
+    path: 'utility/events',
+    icon: Calendar,
+    description: 'Track prior, current, and future demand response events',
+    component: () => import('@/routes/app/utility/events'),
+  },
   // {
   //   title: 'Contracts',
   //   path: 'contracts',

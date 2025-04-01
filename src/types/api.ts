@@ -18,6 +18,7 @@ export type DREvent = {
   start_time: string
   end_time: string
   utility_id: number
+  utility_name: string
 }
 
 export type Contract = {

@@ -2,8 +2,10 @@ import { Calendar, Clock, ListChecks } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { EventCard } from './event-card'
-import { SkeletonCard } from './skeleton-card'
+import { EventCard } from '../../events/event-card'
+import { SkeletonCard } from '../../events/skeleton-card'
+
+import CreateDREventForm from './create-event-modal'
 
 import { SummaryCards } from '@/components'
 import { PageTitle } from '@/components'
@@ -14,7 +16,7 @@ import { useAuth } from '@/context'
 import { fetchEvents } from '@/hooks'
 import { DREvent } from '@/types'
 
-const EventsPage = () => {
+const UtilityEventsPage = () => {
   const [events, setEvents] = useState<DREvent[]>([])
   const [loading, setLoading] = useState(true)
   const location = useLocation()
@@ -32,7 +34,7 @@ const EventsPage = () => {
     const loadEvents = async () => {
       try {
         if (!user) return
-        const data = await fetchEvents(user, 'Residential')
+        const data = await fetchEvents(user, 'Utility')
         setEvents(data)
       } catch (error) {
         console.error('Failed to load events:', error)
@@ -126,8 +128,9 @@ const EventsPage = () => {
           )}
         </TabsContent>
       </Tabs>
+      <CreateDREventForm />
     </div>
   )
 }
 
-export default EventsPage
+export default UtilityEventsPage
