@@ -2,11 +2,14 @@ import { Calendar, Clock, ListChecks } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { EventCard } from './event-card'
-import { SkeletonCard } from './skeleton-card'
+import { EventCard } from '../../events/event-card'
+import { SkeletonCard } from '../../events/skeleton-card'
+
+import CreateDREventForm from './create-event-modal'
 
 import { SummaryCards } from '@/components'
 import { PageTitle } from '@/components'
+import { Button } from '@/components/ui'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { getAppRoute } from '@/config'
@@ -14,9 +17,10 @@ import { useAuth } from '@/context'
 import { fetchEvents } from '@/hooks'
 import { DREvent } from '@/types'
 
-const EventsPage = () => {
+const UtilityEventsPage = () => {
   const [events, setEvents] = useState<DREvent[]>([])
   const [loading, setLoading] = useState(true)
+  const [isForm, setForm] = useState(false)
   const location = useLocation()
   const { user } = useAuth()
   const now = new Date()
@@ -32,7 +36,7 @@ const EventsPage = () => {
     const loadEvents = async () => {
       try {
         if (!user) return
-        const data = await fetchEvents(user, 'Residential')
+        const data = await fetchEvents(user, 'Utility')
         setEvents(data)
       } catch (error) {
         console.error('Failed to load events:', error)
@@ -45,6 +49,10 @@ const EventsPage = () => {
       loadEvents()
     }
   }, [user])
+
+  const toggleForm = () => {
+    setForm(!isForm)
+  }
 
   const summaryItems = [
     {
@@ -69,7 +77,11 @@ const EventsPage = () => {
 
   return (
     <div>
-      <PageTitle route={getAppRoute(location.pathname)} />
+      <PageTitle route={getAppRoute(location.pathname)}>
+        <Button onClick={toggleForm}>{!isForm ? 'Create DR Event' : 'Cancel'}</Button>
+      </PageTitle>
+      {isForm ? <CreateDREventForm /> : null}
+
       <SummaryCards items={summaryItems} />
       <Tabs defaultValue="upcoming" className="w-full">
         <TabsList className="w-full mb-4 sm:mb-6">
@@ -130,4 +142,4 @@ const EventsPage = () => {
   )
 }
 
-export default EventsPage
+export default UtilityEventsPage

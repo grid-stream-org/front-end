@@ -2,13 +2,20 @@
 import { api, auth } from '@/lib'
 import { DREvent, UserData } from '@/types'
 
-export const fetchEvents = async (user: UserData): Promise<DREvent[]> => {
+export const fetchEvents = async (user: UserData, role: string): Promise<DREvent[]> => {
   if (!auth.currentUser) {
     throw new Error('User not authenticated')
   }
+
   try {
     const token = await auth.currentUser.getIdToken()
-    const { data, status } = await api.get(`/dr-events/project/${user.projectId}`, token)
+    const endpoint =
+      role === 'Residential'
+        ? `/dr-events/project/${user.projectId}`
+        : `/dr-events/utility/${user.projectId}`
+
+    const { data, status } = await api.get(endpoint, token)
+
     if (status === 200) {
       return data as DREvent[]
     } else {
