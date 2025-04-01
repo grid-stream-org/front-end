@@ -48,7 +48,7 @@ const DashboardPage = () => {
     if (!user) return
     setIsLoading(true)
     try {
-      const eventsData = await fetchEvents(user)
+      const eventsData = await fetchEvents(user, 'Residential')
       setEvents(eventsData)
     } catch (err) {
       console.error('Failed to load events', err)

@@ -17,7 +17,7 @@ export type DREvent = {
   id: string
   start_time: string
   end_time: string
-  utility_id: number
+  utility_id: string
   utility_name: string
 }
 

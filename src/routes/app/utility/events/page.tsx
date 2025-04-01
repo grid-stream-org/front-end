@@ -9,6 +9,7 @@ import CreateDREventForm from './create-event-modal'
 
 import { SummaryCards } from '@/components'
 import { PageTitle } from '@/components'
+import { Button } from '@/components/ui'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { getAppRoute } from '@/config'
@@ -19,6 +20,7 @@ import { DREvent } from '@/types'
 const UtilityEventsPage = () => {
   const [events, setEvents] = useState<DREvent[]>([])
   const [loading, setLoading] = useState(true)
+  const [isForm, setForm] = useState(false)
   const location = useLocation()
   const { user } = useAuth()
   const now = new Date()
@@ -48,6 +50,10 @@ const UtilityEventsPage = () => {
     }
   }, [user])
 
+  const toggleForm = () => {
+    setForm(!isForm)
+  }
+
   const summaryItems = [
     {
       title: 'Upcoming Events',
@@ -71,7 +77,11 @@ const UtilityEventsPage = () => {
 
   return (
     <div>
-      <PageTitle route={getAppRoute(location.pathname)} />
+      <PageTitle route={getAppRoute(location.pathname)}>
+        <Button onClick={toggleForm}>{!isForm ? 'Create DR Event' : 'Cancel'}</Button>
+      </PageTitle>
+      {isForm ? <CreateDREventForm /> : null}
+
       <SummaryCards items={summaryItems} />
       <Tabs defaultValue="upcoming" className="w-full">
         <TabsList className="w-full mb-4 sm:mb-6">
@@ -128,7 +138,6 @@ const UtilityEventsPage = () => {
           )}
         </TabsContent>
       </Tabs>
-      <CreateDREventForm />
     </div>
   )
 }
