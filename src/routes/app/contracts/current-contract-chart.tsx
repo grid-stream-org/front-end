@@ -246,15 +246,12 @@ const CurrentContract = ({
             <div className="bg-muted/30 inline-flex rounded-full p-6">
               <FileText className="h-8 w-8 text-muted-foreground" />
             </div>
-            <div className="text-center">
+            <div className="flex flex-col justify-center items-center text-center">
               <h3 className="font-medium text-lg">No Active Contract</h3>
               <p className="text-muted-foreground mt-1 mb-4">
                 Engage in a contract to participate in demand response events
               </p>
-              <Button
-                className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
-                onClick={() => setIsModalOpen(true)}
-              >
+              <Button className="flex items-center gap-2" onClick={() => setIsModalOpen(true)}>
                 <PlusCircle className="h-4 w-4" /> Engage in a Contract
               </Button>
             </div>
