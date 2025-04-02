@@ -9,6 +9,7 @@ import { DREvent } from '@/types'
 
 export const DemandResponseEvent = ({ events }: { events: DREvent[] }) => {
   const [upcomingEvents, setUpcomingEvents] = useState<DREvent[]>([])
+  const [currEvent, setCurrEvents] = useState<DREvent | null>(null)
   const [lastEvent, setLastEvent] = useState<DREvent | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -21,11 +22,15 @@ export const DemandResponseEvent = ({ events }: { events: DREvent[] }) => {
           .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
 
         const now = Date.now()
+        const currEvent = sortedEvents.filter(
+          event =>
+            new Date(event.start_time).getTime() < now && now < new Date(event.end_time).getTime(),
+        )
         const pastEvents = sortedEvents.filter(event => new Date(event.end_time).getTime() < now)
         const futureEvents = sortedEvents.filter(
           event => new Date(event.start_time).getTime() > now,
         )
-
+        setCurrEvents(currEvent.length ? currEvent[0] : null)
         setLastEvent(pastEvents.length ? pastEvents[pastEvents.length - 1] : null)
         // Get up to 3 upcoming events
         setUpcomingEvents(futureEvents.slice(0, 3))
@@ -101,11 +106,61 @@ export const DemandResponseEvent = ({ events }: { events: DREvent[] }) => {
         ) : (
           <div className="relative">
             {/* Timeline line - hide on small screens */}
-            {upcomingEvents.length > 0 && (
+            {currEvent != null && (
               <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-muted ml-3.5 z-0 hidden sm:block"></div>
             )}
 
             <div className="space-y-6 relative z-10">
+              {currEvent && (
+                <div key={currEvent.id} className="flex gap-2 sm:gap-4">
+                  {/* Timeline circle - responsive size */}
+                  <div className="relative flex-shrink-0 flex flex-col items-center pt-2 sm:flex">
+                    <div className="rounded-full border-4 border-green-400 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center z-10 bg-green-500">
+                      {/* <span className="text-xs font-bold text-primary-foreground">1</span> */}
+                    </div>
+                  </div>
+                  <div className="flex-1 pt-1">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-1 gap-1">
+                      <div>
+                        <h4 className="font-semibold text-base">Current Demand Response Event</h4>
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate max-w-full sm:max-w-[240px]">
+                          ID: {shortenId(currEvent.id)}
+                        </p>
+                      </div>
+                      <Badge variant="default" className="self-start shrink-0 bg-green-500">
+                        Active
+                      </Badge>
+                    </div>
+
+                    <div className="bg-card border rounded-md p-3 mt-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                          <span className="text-sm truncate">
+                            {formatEventDate(currEvent.start_time)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                          <span className="text-sm whitespace-nowrap">
+                            {formatEventTime(currEvent.start_time)}
+                            <ArrowRight className="h-3 w-3 inline mx-1" />
+                            {formatEventTime(currEvent.end_time)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between mt-2 pt-2 border-t flex-wrap gap-2">
+                        <div className="text-sm">
+                          <span className="text-muted-foreground">Duration:</span>
+                          <span className="ml-1 font-medium">
+                            {getEventDuration(currEvent.start_time, currEvent.end_time)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               {upcomingEvents.length > 0 ? (
                 upcomingEvents.map((event, index) => (
                   <div key={event.id} className="flex gap-2 sm:gap-4">
@@ -123,7 +178,7 @@ export const DemandResponseEvent = ({ events }: { events: DREvent[] }) => {
                     <div className="flex-1 pt-1">
                       <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-1 gap-1">
                         <div>
-                          <h4 className="font-semibold text-base">Demand Response Event</h4>
+                          <h4 className="font-semibold text-base">Next Demand Response Event</h4>
                           <p className="text-xs sm:text-sm text-muted-foreground truncate max-w-full sm:max-w-[240px]">
                             ID: {shortenId(event.id)}
                           </p>
