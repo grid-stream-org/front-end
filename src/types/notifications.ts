@@ -6,5 +6,6 @@ export type Notification = {
   message: string
   start_time: Timestamp
   end_time: Timestamp
+  average: number
   read: boolean
 }
