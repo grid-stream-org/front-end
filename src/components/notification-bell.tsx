@@ -35,7 +35,6 @@ export const NotificationBell = () => {
 
   const formatTime = (timestamp: Timestamp) => {
     if (!timestamp) return null
-
     const date = new Date(timestamp.seconds * 1000)
     return date.toLocaleString(undefined, {
       month: 'short',
@@ -44,6 +43,12 @@ export const NotificationBell = () => {
       minute: '2-digit',
     })
   }
+
+  const sortedNotifications = [...notifications].sort((a, b) => {
+    if (!a.start_time) return 1
+    if (!b.start_time) return -1
+    return b.start_time.seconds - a.start_time.seconds
+  })
 
   return (
     <>
@@ -63,12 +68,12 @@ export const NotificationBell = () => {
           align="end"
           className="bg-popover text-popover-foreground border border-border shadow-lg"
         >
-          {notifications.length === 0 ? (
+          {sortedNotifications.length === 0 ? (
             <DropdownMenuItem disabled className="text-muted-foreground">
               No notifications
             </DropdownMenuItem>
           ) : (
-            notifications.map(n => (
+            sortedNotifications.map(n => (
               <DropdownMenuItem
                 key={n.id}
                 className={`flex flex-col items-start p-2 hover:bg-muted hover:text-muted-foreground cursor-pointer ${

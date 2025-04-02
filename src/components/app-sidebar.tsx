@@ -16,13 +16,15 @@ import {
   NavUser,
   useSidebar,
 } from '@/components/ui'
-import { protectedRoutes, isActiveRoute } from '@/config'
+import { protectedRoutes, isActiveRoute, utilityRoutes } from '@/config'
 import { useAuth } from '@/context'
+import { UserRole } from '@/types'
 
 export const AppSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => {
   const { open } = useSidebar()
   const location = useLocation()
   const { user } = useAuth()
+  const routes = user?.role === UserRole.RESIDENTIAL ? protectedRoutes : utilityRoutes
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -35,7 +37,7 @@ export const AppSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {protectedRoutes.map(route => (
+              {routes.map(route => (
                 <SidebarMenuItem key={route.title}>
                   <SidebarMenuButton asChild isActive={isActiveRoute(route.path, location)}>
                     <Link to={route.path}>

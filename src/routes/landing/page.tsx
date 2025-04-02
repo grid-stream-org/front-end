@@ -133,7 +133,7 @@ const LandingPage = () => {
               className="w-full md:w-1/2 mb-10 md:mb-0"
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1.5 }}
+              transition={{ duration: 0.5 }}
             >
               <h1 className="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
                 Powering the Future
@@ -152,7 +152,7 @@ const LandingPage = () => {
               className="w-full md:w-1/2 flex justify-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.5 }}
+              transition={{ duration: 0.5 }}
             >
               <img src={TurbineSVG} alt="Turbine illustration" className="w-full max-w-md h-auto" />
             </motion.div>
