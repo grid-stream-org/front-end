@@ -222,13 +222,6 @@ const CurrentContract = ({
               <Separator className="mt-2" />
             </div>
 
-            <div>
-              <dt className="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-2">
-                Project ID
-              </dt>
-              <dd className="text-sm pl-6 text-muted-foreground">{activeContract.projectId}</dd>
-            </div>
-
             {!isPending && (
               <div className="pt-4">
                 <Button

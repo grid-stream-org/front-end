@@ -216,7 +216,6 @@ const ContractHistory = ({
               <TableHeader>
                 <TableRow className="bg-muted/50">
                   <TableHead>Year</TableHead>
-                  <TableHead>Project ID</TableHead>
                   <TableHead>Offload (kW)</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
@@ -233,7 +232,6 @@ const ContractHistory = ({
                   processedContracts.map(contract => (
                     <TableRow key={contract.id}>
                       <TableCell className="font-medium">{contract.year}</TableCell>
-                      <TableCell>{contract.projectId}</TableCell>
                       <TableCell>{contract.offloadAmount} kW</TableCell>
                       <TableCell>{getStatusBadge(contract.status)}</TableCell>
                       <TableCell>

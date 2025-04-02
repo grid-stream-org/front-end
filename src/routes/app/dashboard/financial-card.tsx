@@ -122,13 +122,13 @@ export const FinancialImpactCard = ({
 
     // Calculate earnings based on incentive rate
     const earnings = reduction * incentiveRate * completedEvents
-    setEstimatedEarnings(earnings)
+    setYearlyProjection(earnings)
 
     // Project yearly earnings (assuming 12 events per year)
     const yearlyEvents = 12 // Maximum events per winter
     const perEventEarning = completedEvents > 0 ? earnings / completedEvents : 0
     const projectedYearly = perEventEarning * yearlyEvents
-    setYearlyProjection(projectedYearly)
+    setEstimatedEarnings(projectedYearly)
   }, [data, events, projectAverages, completedEvents, incentiveRate])
 
   return (
