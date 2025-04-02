@@ -32,6 +32,8 @@ const ContractsPage = () => {
     if (!user) return
 
     setIsLoading(true)
+    setError(null)
+
     try {
       const contractsData = await fetchContracts(user)
       setContracts(contractsData)
@@ -49,37 +51,36 @@ const ContractsPage = () => {
     }
   }, [projectId, loadContracts])
 
-  useEffect(() => {
-    if (projectId) {
-      loadContracts()
-    }
-  }, [projectId, loadContracts])
-
   // Find active contract
   const activeContract = contracts.find(contract => contract.status === 'active') || null
+
+  if (!projectId) {
+    return (
+      <>
+        <PageTitle route={getAppRoute(location.pathname)} />
+        <div className="flex items-center justify-center h-40 rounded-lg border bg-card shadow-sm">
+          <p className="text-muted-foreground">Pending Approval...</p>
+        </div>
+      </>
+    )
+  }
 
   return (
     <>
       <PageTitle route={getAppRoute(location.pathname)} />
-      <div className="space-y-6">
-        {!projectId ? (
-          <div className="text-center text-lg font-semibold">Pending Approval...</div>
-        ) : (
-          <>
-            <CurrentContract
-              contract={activeContract}
-              isLoading={isLoading}
-              onContractCreated={loadContracts}
-              baselineOffload={50}
-            />
-            <ContractHistory
-              contracts={contracts}
-              isLoading={isLoading}
-              onContractDeleted={loadContracts}
-              error={error}
-            />
-          </>
-        )}
+      <div className="grid gap-6">
+        <CurrentContract
+          contract={activeContract}
+          isLoading={isLoading}
+          onContractCreated={loadContracts}
+          baselineOffload={50}
+        />
+        <ContractHistory
+          contracts={contracts}
+          isLoading={isLoading}
+          onContractDeleted={loadContracts}
+          error={error}
+        />
       </div>
     </>
   )

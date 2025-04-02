@@ -67,64 +67,41 @@ const EventsPage = () => {
     },
   ]
 
+  const renderEventsList = (eventsList: DREvent[]) => {
+    if (loading) {
+      return [...Array(3)].map((_, idx) => <SkeletonCard key={idx} />)
+    }
+
+    if (eventsList.length > 0) {
+      return eventsList.map(event => <EventCard key={event.id} event={event} />)
+    }
+
+    return (
+      <Card>
+        <CardContent className="p-4">
+          <p className="text-center text-muted-foreground">No events found</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
-    <div>
+    <div className="w-full">
       <PageTitle route={getAppRoute(location.pathname)} />
       <SummaryCards items={summaryItems} />
+
       <Tabs defaultValue="upcoming" className="w-full">
-        <TabsList className="w-full mb-4 sm:mb-6 flex overflow-x-auto no-scrollbar gap-1">
-          <TabsTrigger value="upcoming" className="flex-1 min-w-[8rem] whitespace-nowrap">
-            Upcoming Events
-          </TabsTrigger>
-          <TabsTrigger value="active" className="flex-1 min-w-[8rem] whitespace-nowrap">
-            Active Events
-          </TabsTrigger>
-          <TabsTrigger value="past" className="flex-1 min-w-[8rem] whitespace-nowrap">
-            Past Events
-          </TabsTrigger>
+        <TabsList className="grid grid-cols-3 w-full">
+          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+          <TabsTrigger value="active">Active</TabsTrigger>
+          <TabsTrigger value="past">Past</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="upcoming">
-          {loading ? (
-            [...Array(3)].map((_, idx) => <SkeletonCard key={idx} />)
-          ) : upcomingEvents.length > 0 ? (
-            upcomingEvents.map(event => <EventCard key={event.id} event={event} />)
-          ) : (
-            <Card>
-              <CardContent className="p-4 sm:p-6">
-                <p className="text-center text-muted-foreground">No upcoming events scheduled</p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
+        <TabsContent value="upcoming">{renderEventsList(upcomingEvents)}</TabsContent>
 
-        <TabsContent value="active">
-          {loading ? (
-            [...Array(3)].map((_, idx) => <SkeletonCard key={idx} />)
-          ) : activeEvents.length > 0 ? (
-            activeEvents.map(event => <EventCard key={event.id} event={event} />)
-          ) : (
-            <Card>
-              <CardContent className="p-4 sm:p-6">
-                <p className="text-center text-muted-foreground">No active events</p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
+        <TabsContent value="active">{renderEventsList(activeEvents)}</TabsContent>
 
-        <TabsContent value="past">
-          {loading ? (
-            [...Array(3)].map((_, idx) => <SkeletonCard key={idx} />)
-          ) : pastEvents.length > 0 ? (
-            pastEvents.map(event => <EventCard key={event.id} event={event} />)
-          ) : (
-            <Card>
-              <CardContent className="p-4 sm:p-6">
-                <p className="text-center text-muted-foreground">No past events found</p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
+        <TabsContent value="past">{renderEventsList(pastEvents)}</TabsContent>
       </Tabs>
     </div>
   )
