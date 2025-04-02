@@ -100,16 +100,9 @@ const utilityRoutes: AppRoute[] = [
     title: 'Dashboard',
     path: 'utility/dashboard',
     icon: LayoutDashboard,
-    description: 'soething ustilyView key metrics and overview of your grid',
+    description: 'View key metrics and overview of resident grids',
     component: () => import('@/routes/app/utility/dashboard'),
   },
-  // {
-  //   title: 'Monitoring',
-  //   path: 'monitoring',
-  //   icon: Gauge,
-  //   description: 'Monitor real-time power flow and device performance across your residence',
-  //   component: () => import('@/routes/app/monitoring'),
-  // },
   {
     title: 'Events',
     path: 'utility/events',
@@ -117,28 +110,12 @@ const utilityRoutes: AppRoute[] = [
     description: 'Track prior, current, and future demand response events',
     component: () => import('@/routes/app/utility/events'),
   },
-  // {
-  //   title: 'Contracts',
-  //   path: 'contracts',
-  //   icon: ScrollText,
-  //   description: 'Manage and review your contracts and agreements',
-  //   component: () => import('@/routes/app/contracts'),
-  // },
-  // {
-  //   title: 'Devices',
-  //   path: 'devices',
-  //   icon: SatelliteDish,
-  //   description: 'View and manage your distributed energy resources',
-  //   component: () => import('@/routes/app/devices'),
-  // },
 ]
 
 export const routes = [...publicRoutes, ...protectedRoutes, ...authRoutes, ...hiddenProtectedRoutes]
 
 export const getTitle = (pathname: string): string | undefined => {
-  const path = pathname.includes('app') ? pathname.split('/app/')[1] : pathname.replace('/', '')
-  const route = routes.find(route => route.path === path)
-  return route?.title
+  return getAppRoute(pathname)?.title
 }
 
 export const isActiveRoute = (path: string, location: Location): boolean => {
