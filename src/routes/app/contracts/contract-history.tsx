@@ -1,9 +1,11 @@
 'use client'
 
-import { TrendingUp } from 'lucide-react'
+import { TrendingUp, File, AlertTriangle } from 'lucide-react'
 import { useState } from 'react'
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Label } from 'recharts'
 
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -28,6 +30,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label as FormLabel } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -109,7 +112,7 @@ const ContractHistory = ({
   // Format contracts for display in chart
   const processedContracts: ProcessedContract[] = contracts.map(contract => ({
     id: contract.id,
-    year: new Date(contract.start_date).getFullYear(),
+    year: new Date(contract.end_date).getFullYear(),
     projectId: contract.project_id,
     offloadAmount: contract.contract_threshold,
     startDate: contract.start_date,
@@ -155,9 +158,6 @@ const ContractHistory = ({
     return null
   }
 
-  if (isLoading) return <div>Loading contracts...</div>
-  if (error) return <div>Error: {error}</div>
-
   // Calculate percentage change if there are at least two years of data
   const years = Object.keys(yearlyOffload).sort()
   let trendPercentage = 0
@@ -175,53 +175,87 @@ const ContractHistory = ({
     }
   }
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'active':
+        return <Badge className="bg-green-500 hover:bg-green-500">Active</Badge>
+      case 'pending':
+        return <Badge className="bg-amber-500 hover:bg-amber-500">Pending</Badge>
+      case 'inactive':
+        return <Badge variant="outline">Inactive</Badge>
+      default:
+        return <Badge variant="outline">{status}</Badge>
+    }
+  }
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Past Contracts</CardTitle>
+      <CardHeader className="flex items-center justify-between gap-2 border-b py-5 sm:flex-row">
+        <div>
+          <CardTitle className="flex items-center gap-2">
+            <File className="h-5 w-5 text-muted-foreground" />
+            Past Contracts
+          </CardTitle>
+          <CardDescription>Historical contract records</CardDescription>
+        </div>
       </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Year</TableHead>
-              <TableHead>Project ID</TableHead>
-              <TableHead>Offload (kW)</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {processedContracts.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center">
-                  No contracts found
-                </TableCell>
-              </TableRow>
-            ) : (
-              processedContracts.map(contract => (
-                <TableRow key={contract.id}>
-                  <TableCell>{contract.year}</TableCell>
-                  <TableCell>{contract.projectId}</TableCell>
-                  <TableCell>{contract.offloadAmount} kW</TableCell>
-                  <TableCell>{contract.status}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => openDeleteDialog(contract)}
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
+      <CardContent className="pt-6">
+        {isLoading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-64 w-full" />
+          </div>
+        ) : error ? (
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        ) : (
+          <div className="rounded-md border overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead>Year</TableHead>
+                  <TableHead>Project ID</TableHead>
+                  <TableHead>Offload (kW)</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              </TableHeader>
+              <TableBody>
+                {processedContracts.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
+                      No contracts found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  processedContracts.map(contract => (
+                    <TableRow key={contract.id}>
+                      <TableCell className="font-medium">{contract.year}</TableCell>
+                      <TableCell>{contract.projectId}</TableCell>
+                      <TableCell>{contract.offloadAmount} kW</TableCell>
+                      <TableCell>{getStatusBadge(contract.status)}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-destructive border-destructive hover:bg-destructive/10"
+                          onClick={() => openDeleteDialog(contract)}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </CardContent>
 
-      {chartData.length > 0 && (
+      {chartData.length > 0 && !isLoading && !error && (
         <>
           <CardHeader>
             <CardTitle>Offload History</CardTitle>
@@ -280,7 +314,7 @@ const ContractHistory = ({
           </CardContent>
           {years.length >= 2 && (
             <CardFooter className="flex-col items-start gap-2 text-sm">
-              <div className="flex gap-2 font-medium leading-none">
+              <div className="flex items-center gap-2 font-medium leading-none">
                 {trendingUp ? 'Trending up' : 'Trending down'} by{' '}
                 {Math.abs(trendPercentage).toFixed(1)}% from previous year
                 <TrendingUp className={`h-4 w-4 ${!trendingUp ? 'transform rotate-180' : ''}`} />
@@ -305,12 +339,23 @@ const ContractHistory = ({
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            <div className="bg-amber-50 p-3 rounded-md border border-amber-200 flex gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-amber-800">This action cannot be undone</p>
+                <p className="text-sm text-amber-700 mt-1">
+                  Deleting this contract will permanently remove it from your history.
+                </p>
+              </div>
+            </div>
             <div>
               <FormLabel>Enter Project ID to Confirm Termination</FormLabel>
               <Input
                 type="text"
                 value={projectIdInput}
                 onChange={e => setProjectIdInput(e.target.value)}
+                placeholder="Enter project ID to confirm"
+                className="mt-1"
               />
             </div>
           </div>

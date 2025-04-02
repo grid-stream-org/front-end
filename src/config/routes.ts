@@ -110,13 +110,13 @@ const utilityRoutes: AppRoute[] = [
   //   description: 'Monitor real-time power flow and device performance across your residence',
   //   component: () => import('@/routes/app/monitoring'),
   // },
-  {
-    title: 'Events',
-    path: 'utility/events',
-    icon: Calendar,
-    description: 'Track prior, current, and future demand response events',
-    component: () => import('@/routes/app/utility/events'),
-  },
+  // {
+  //   title: 'Events',
+  //   path: 'events',
+  //   icon: Calendar,
+  //   description: 'Track prior, current, and future demand response events',
+  //   component: () => import('@/routes/app/events'),
+  // },
   // {
   //   title: 'Contracts',
   //   path: 'contracts',
@@ -150,8 +150,7 @@ export const isAppRoute = (route: Route): route is AppRoute =>
   'icon' in route && 'component' in route && 'description' in route
 
 export const getAppRoute = (pathname: string): AppRoute | undefined => {
-  let path = pathname.includes('app') ? pathname.split('/app/')[1] : pathname.replace('/', '')
-  path = pathname.includes('utility') ? pathname.split('utility/')[1] : pathname.replace('/', '')
+  const path = pathname.includes('app') ? pathname.split('/app/')[1] : pathname.replace('/', '')
   return [...protectedRoutes, ...hiddenProtectedRoutes].find(route => route.path === path)
 }
 
