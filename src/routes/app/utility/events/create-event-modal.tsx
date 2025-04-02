@@ -28,8 +28,8 @@ const CreateDREventForm = () => {
         end_time: endDate.toISOString(),
       }
       const token = await auth.currentUser.getIdToken()
-      console.log({ startDate, endDate })
       await api.post(`/dr-events`, token, event)
+      toast.success('DR Event Created Successfully')
     } catch (error) {
       toast.error('Failed to create DR Event')
       console.error(error)
@@ -37,7 +37,7 @@ const CreateDREventForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-md pb-4">
       <div className="space-y-2">
         <label className="block text-sm font-medium">Start Date & Time</label>
         <DateTimePicker24h value={startDate} onChange={setStartDate} />

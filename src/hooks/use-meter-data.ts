@@ -27,9 +27,12 @@ export const useMeterData = () => {
     })
   }, [data, addDataPoint])
 
-  // Clean up old data every 5 minutes
   useEffect(() => {
+    cleanOldData()
+
+    // Then set interval
     const cleanup = setInterval(cleanOldData, 5 * 60 * 1000)
+
     return () => clearInterval(cleanup)
   }, [cleanOldData])
 }

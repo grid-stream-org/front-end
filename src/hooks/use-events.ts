@@ -1,4 +1,3 @@
-// I am putting this in the hooks directory in case we want to reuse it, maybe for dashboard.
 import { api, auth } from '@/lib'
 import { DREvent, UserData } from '@/types'
 

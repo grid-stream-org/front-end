@@ -150,9 +150,16 @@ export const isAppRoute = (route: Route): route is AppRoute =>
   'icon' in route && 'component' in route && 'description' in route
 
 export const getAppRoute = (pathname: string): AppRoute | undefined => {
-  let path = pathname.includes('app') ? pathname.split('/app/')[1] : pathname.replace('/', '')
-  path = pathname.includes('utility') ? pathname.split('utility/')[1] : pathname.replace('/', '')
-  return [...protectedRoutes, ...hiddenProtectedRoutes].find(route => route.path === path)
+  let path = undefined
+  if (pathname.includes('utility')) {
+    path = pathname.includes('utility') ? pathname.split('utility/')[1] : pathname.replace('/', '')
+  } else {
+    path = pathname.includes('app') ? pathname.split('/app/')[1] : pathname.replace('/', '')
+  }
+
+  return [...protectedRoutes, ...hiddenProtectedRoutes, ...utilityRoutes].find(
+    route => route.path === path,
+  )
 }
 
 export const getAppRoutes = (): AppRoute[] => routes.filter(isAppRoute)

@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export const SkeletonCard = () => (
   <Card className="rounded-xl shadow-sm overflow-hidden mb-4">
-    <div className="h-1 bg-gray-200" />
+    <div className="h-1" />
     <CardContent className="p-6">
       <div className="flex justify-between items-start mb-4">
         <div>

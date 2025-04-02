@@ -78,10 +78,9 @@ const UtilityEventsPage = () => {
   return (
     <div>
       <PageTitle route={getAppRoute(location.pathname)}>
-        <Button onClick={toggleForm}>{!isForm ? 'Create DR Event' : 'Cancel'}</Button>
+        <Button onClick={toggleForm}>{!isForm ? 'Create Event' : 'Cancel'}</Button>
       </PageTitle>
       {isForm ? <CreateDREventForm /> : null}
-
       <SummaryCards items={summaryItems} />
       <Tabs defaultValue="upcoming" className="w-full">
         <TabsList className="w-full mb-4 sm:mb-6">

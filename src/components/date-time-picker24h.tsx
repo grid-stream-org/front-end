@@ -52,7 +52,7 @@ const DateTimePicker24h = ({ value, onChange }: DateTimePickerProps) => {
           {value ? format(value, 'MM/dd/yyyy HH:mm') : <span>MM/DD/YYYY hh:mm</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent className="w-96 p-0">
         <div className="sm:flex">
           <Calendar mode="single" selected={value} onSelect={handleDateSelect} initialFocus />
           <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
