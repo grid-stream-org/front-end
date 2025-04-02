@@ -1,5 +1,5 @@
 import { Timestamp } from '@firebase/firestore'
-import { Calendar, Clock } from 'lucide-react'
+import { Calendar, Clock, Zap } from 'lucide-react'
 
 import { Button } from '@/components/ui'
 import {
@@ -60,6 +60,13 @@ export const NotificationModal = ({ notification, onClose }: NotificationModalPr
             <div>
               <p className="font-medium">End Time</p>
               <p className="text-muted-foreground">{formatDateTime(notification.end_time)}</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-2">
+            <Zap className="h-4 w-4 mt-0.5 text-muted-foreground" />
+            <div>
+              <p className="font-medium">Average Reduction</p>
+              <p className="text-muted-foreground">{`${notification.average.toFixed(2)} kW`}</p>
             </div>
           </div>
         </div>
