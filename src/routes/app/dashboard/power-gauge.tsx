@@ -18,8 +18,8 @@ export const PowerConsumptionGauge = ({
   isConnected = true,
   error = null,
 }: PowerConsumptionGaugeProps) => {
-  const [currentConsumption, setCurrentConsumption] = useState(0)
   const [baseline, setBaseline] = useState(0)
+  const [reduction, setRedction] = useState(0)
   const [threshold, setThreshold] = useState(0)
   const [status, setStatus] = useState('No Data')
   const [statusColor, setStatusColor] = useState('text-gray-500')
@@ -32,14 +32,14 @@ export const PowerConsumptionGauge = ({
     if (data && data.length > 0) {
       const latestData = data[data.length - 1]
 
-      setCurrentConsumption(formatValue(latestData.consumption!))
       setBaseline(formatValue(latestData.baseline!))
       setThreshold(formatValue(latestData.contract!))
+      setRedction(formatValue(latestData.reduction!))
 
-      if (latestData.consumption! > latestData.contract!) {
+      if (latestData.reduction! > latestData.contract!) {
         setStatus('Meeting Target')
         setStatusColor('text-green-500')
-      } else if (latestData.consumption! > latestData.baseline! * 0.8) {
+      } else if (latestData.reduction! > latestData.contract! * 0.8) {
         setStatus('Near Threshold')
         setStatusColor('text-amber-500')
       } else {
@@ -47,19 +47,12 @@ export const PowerConsumptionGauge = ({
         setStatusColor('text-red-500')
       }
 
-      // Calculate gauge percentage
-      const maxValue = latestData.baseline! * 1.5
-      const calculatedPercentage = Math.min(
-        100,
-        Math.max(0, (latestData.consumption! / maxValue) * 100),
-      )
-      setPercentage(calculatedPercentage)
+      if (latestData.reduction !== undefined && latestData.contract !== undefined) {
+        const calculatedPercentage = (latestData.reduction! / latestData.contract!) * 100
+        setPercentage(formatValue(Math.max(-100, Math.min(200, calculatedPercentage))))
+      }
     }
   }, [data])
-
-  // Calculate power reduction and percentage with 2 decimal places
-  const powerReduction = formatValue(baseline - currentConsumption)
-  const reductionPercentage = baseline > 0 ? formatValue((powerReduction / baseline) * 100) : 0
 
   return (
     <Card className="h-full">
@@ -88,13 +81,16 @@ export const PowerConsumptionGauge = ({
         ) : (
           <>
             <div className="mb-4 flex items-center justify-between">
-              <div className="text-2xl font-bold">{currentConsumption} kW</div>
+              <div className="text-2xl font-bold">{reduction} kW</div>
               <Badge variant="outline" className={statusColor}>
                 {status}
               </Badge>
             </div>
 
-            <Progress value={percentage} className="h-3 mb-2 bg-secondary/20">
+            <Progress
+              value={percentage > 100 ? 100 : percentage}
+              className="h-3 mb-2 bg-secondary/20"
+            >
               <div
                 className="h-full bg-secondary rounded-full transition-all"
                 style={{ width: `${percentage}%` }}
@@ -113,7 +109,7 @@ export const PowerConsumptionGauge = ({
               <div className="flex flex-col">
                 <span className="text-sm text-muted-foreground">Reduction</span>
                 <span className={`text-lg font-semibold ${statusColor}`}>
-                  {reductionPercentage > 0 ? `${reductionPercentage}%` : '0%'}
+                  {percentage > 0 ? `${percentage}%` : '0%'}
                 </span>
               </div>
             </div>
